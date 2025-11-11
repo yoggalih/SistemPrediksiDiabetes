@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pusat Edukasi Diabetes</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: "Poppins", sans-serif;
+        background-color: #f8f9fa;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+      .main-content {
+        flex-grow: 1;
+        padding-top: 20px;
+        padding-bottom: 40px;
+      }
+      .accordion-button.bg-info.text-white {
+        background-color: #0dcaf0 !important;
+        color: #fff !important;
+      }
+      /* CSS Tambahan untuk Efek Visual */
+      .interactive-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        margin-bottom: 15px; /* Tambahkan margin antar card */
+      }
+      .interactive-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+      }
+      .section-image {
+        max-width: 100%;
+        height: auto;
+        border-radius: 8px;
+        margin-bottom: 15px;
+      }
+      .card-edu {
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 20px;
+        background-color: #fff;
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+      <div class="container">
+        <a class="navbar-brand" href="{{ url_for('index') }}">
+          Prediksi Diabetes
+        </a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+          aria-controls="navbarNav"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('index') }}">Home</a>
+            </li>
+            <li class="nav-item">
+              <a
+                class="nav-link active"
+                aria-current="page"
+                href="{{ url_for('education') }}"
+                >Pusat Edukasi</a
+              >
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <div class="container main-content">
+      <h1 class="mb-4 text-center text-primary">Pusat Edukasi Diabetes</h1>
+      <p class="lead text-center mb-5">
+        Pahami dasar-dasar diabetes, cara observasi mandiri, dan tips
+        pencegahan.
+      </p>
+
+      <div class="card interactive-card">
+        <h2 class="card-header bg-success text-white">
+          1. Edukasi Dasar tentang Diabetes
+        </h2>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-7">
+              <h5 class="card-title text-success">
+                Definisi dan Tipe Diabetes
+              </h5>
+              <p class="card-text">
+                Diabetes adalah kondisi kronis ketika kadar gula (glukosa) dalam
+                darah terlalu tinggi. Ini disebabkan oleh kurangnya insulin atau
+                ketidakmampuan tubuh menggunakan insulin secara efektif.
+              </p>
+
+              <h6>Tiga Tipe Utama:</h6>
+              <ul>
+                <li>
+                  <strong>Tipe 1:</strong> Tubuh tidak memproduksi insulin.
+                  Umumnya terdiagnosis pada anak-anak/remaja.
+                </li>
+                <li>
+                  <strong>Tipe 2:</strong> Tubuh tidak menggunakan insulin
+                  dengan baik (resistensi insulin). Tipe yang paling umum.
+                </li>
+                <li>
+                  <strong>Gestasional:</strong> Terjadi selama masa kehamilan,
+                  biasanya menghilang setelah melahirkan.
+                </li>
+              </ul>
+
+              <h5 class="card-title mt-4 text-warning">
+                Faktor Risiko dan Komplikasi
+              </h5>
+              <p>
+                Faktor risiko meliputi: Obesitas, riwayat keluarga, usia, dan
+                gaya hidup tidak sehat (kurang olahraga).
+              </p>
+              <p>
+                Komplikasi yang mungkin timbul jika tidak ditangani: Gangguan
+                jantung, ginjal, kerusakan mata, dan kerusakan saraf
+                (neuropati).
+              </p>
+            </div>
+            <div class="col-md-5 text-center">
+              <img
+                src="https://placehold.co/400x300/198754/FFFFFF?text=Edukasi+Dasar"
+                class="section-image img-fluid"
+                alt="Visualisasi Edukasi Diabetes"
+              />
+              <p class="text-muted">
+                <small>Ilustrasi penjelasan tipe diabetes.</small>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-6">
+          <div class="card interactive-card h-100">
+            <h2 class="card-header bg-warning text-dark">
+              2. Panduan Observasi Mandiri
+            </h2>
+            <div class="card-body">
+              <h5 class="card-title">Kenali Diri Anda</h5>
+              <p>
+                Langkah-langkah sederhana untuk meningkatkan kesadaran diri
+                terhadap risiko diabetes:
+              </p>
+
+              <ol>
+                <li>
+                  <strong>Catat Gejala:</strong> Buat daftar gejala yang sering
+                  Anda rasakan (haus, lelah, lapar).
+                </li>
+                <li>
+                  <strong>Pantau Gaya Hidup:</strong> Evaluasi pola makan,
+                  frekuensi aktivitas fisik, dan perubahan berat badan Anda
+                  dalam sebulan terakhir.
+                </li>
+              </ol>
+
+              <h5 class="card-title mt-3">Indikator Sederhana yang Waspada:</h5>
+              <ul class="text-danger">
+                <li>Perasaan haus berlebihan (Polidipsia).</li>
+                <li>
+                  Sering buang air kecil, terutama pada malam hari (Poliuria).
+                </li>
+                <li>Lelah atau mudah lelah tanpa alasan jelas.</li>
+                <li>Luka yang terasa lambat atau sulit sembuh.</li>
+              </ul>
+
+              <div class="alert alert-info mt-3">
+                <strong>Catatan:</strong> Informasi ini hanya alat bantu
+                kesadaran diri, <strong>bukan diagnosis</strong>.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="card interactive-card h-100">
+            <h2 class="card-header bg-primary text-white">
+              3. Tips Pencegahan
+            </h2>
+            <div class="card-body">
+              <h5 class="card-title">Terapkan Gaya Hidup Sehat</h5>
+              <p>
+                Pencegahan adalah kunci. Terapkan kebiasaan ini secara
+                konsisten:
+              </p>
+
+              <ol>
+                <li>
+                  <strong>Pola Makan Seimbang:</strong> Kurangi asupan gula dan
+                  karbohidrat olahan (nasi putih, roti). Perbanyak serat,
+                  sayuran, dan protein.
+                </li>
+                <li>
+                  <strong>Aktivitas Fisik Teratur:</strong> Olahraga minimal 30
+                  menit per hari, 5 hari seminggu. Contoh: jalan cepat,
+                  bersepeda.
+                </li>
+                <li>
+                  <strong>Jaga Berat Badan Ideal:</strong> Kontrol berat badan
+                  dan lingkar pinggang Anda (salah satu faktor risiko terbesar
+                  Tipe 2).
+                </li>
+                <li>
+                  <strong>Hindari Zat Berbahaya:</strong> Jangan merokok dan
+                  batasi konsumsi alkohol.
+                </li>
+              </ol>
+
+              <div class="alert alert-success mt-3">
+                <span class="fw-bold">Ingat:</span> Langkah kecil yang konsisten
+                lebih baik daripada perubahan besar yang hanya sesaat!
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card interactive-card mt-3">
+        <h2 class="card-header bg-secondary text-white">
+          4. Konten Edukatif Tambahan dan FAQ
+        </h2>
+        <div class="card-body">
+          <h5 class="card-title mb-3">Tanya Jawab Singkat (FAQ)</h5>
+          <div class="accordion accordion-flush" id="faqAccordion">
+            <div class="accordion-item">
+              <h2 class="accordion-header">
+                <button
+                  class="accordion-button collapsed fw-bold"
+                  type="button"
+                  data-bs-toggle="collapse"
+                  data-bs-target="#flush-collapseOne"
+                >
+                  Apakah sering minum air manis bisa menyebabkan diabetes?
+                </button>
+              </h2>
+              <div
+                id="flush-collapseOne"
+                class="accordion-collapse collapse"
+                data-bs-parent="#faqAccordion"
+              >
+                <div class="accordion-body">
+                  <strong>Fakta:</strong> Konsumsi minuman manis secara
+                  berlebihan dalam jangka panjang dapat meningkatkan risiko
+                  diabetes Tipe 2 karena menyebabkan kenaikan berat badan dan
+                  resistensi insulin. Namun, diabetes disebabkan oleh kombinasi
+                  faktor genetik dan gaya hidup, bukan hanya satu faktor.
+                </div>
+              </div>
+            </div>
+            <div class="accordion-item">
+              <h2 class="accordion-header">
+                <button
+                  class="accordion-button collapsed fw-bold"
+                  type="button"
+                  data-bs-toggle="collapse"
+                  data-bs-target="#flush-collapseTwo"
+                >
+                  Makanan apa yang aman untuk gula darah?
+                </button>
+              </h2>
+              <div
+                id="flush-collapseTwo"
+                class="accordion-collapse collapse"
+                data-bs-parent="#faqAccordion"
+              >
+                <div class="accordion-body">
+                  Makanan yang aman adalah yang memiliki indeks glikemik rendah
+                  dan tinggi serat, seperti sayuran hijau, kacang-kacangan,
+                  biji-bijian utuh (oat, beras merah), dan buah-buahan seperti
+                  beri. Protein tanpa lemak juga sangat dianjurkan.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <h5 class="card-title mt-4">Infografik (Konsep Visual)</h5>
+          <div class="text-center mt-3">
+            <img
+              src="https://placehold.co/800x200/40E0D0/333333?text=Infografik+Visual+Tips+Pencegahan+Diabetes"
+              class="section-image img-fluid"
+              alt="Infografik Pencegahan Diabetes"
+            />
+            <p class="text-muted">
+              <small
+                >Visualisasi konsep: Infografik tips pola hidup sehat.</small
+              >
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion" id="formGuideAccordion">
+        <div class="accordion-item interactive-card mt-3">
+          <h2 class="accordion-header" id="headingFormGuide">
+            <button
+              class="accordion-button collapsed bg-info text-white"
+              type="button"
+              data-bs-toggle="collapse"
+              data-bs-target="#collapseFormGuide"
+              aria-expanded="true"
+              aria-controls="collapseFormGuide"
+            >
+              <span class="fw-bold"
+                >5. Panduan Mengisi Formulir Prediksi (Wajib Dibaca!)</span
+              >
+            </button>
+          </h2>
+          <div
+            id="collapseFormGuide"
+            class="accordion-collapse collapse show"
+            aria-labelledby="headingFormGuide"
+            data-bs-parent="#formGuideAccordion"
+          >
+            <div class="accordion-body">
+              <div class="table-responsive">
+                <table class="table table-bordered table-striped">
+                  <thead class="table-light">
+                    <tr>
+                      <th>Data</th>
+                      <th>Satuan/Keterangan</th>
+                      <th>Catatan Penting</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><strong>Jumlah Kehamilan</strong></td>
+                      <td>Jumlah kali hamil</td>
+                      <td class="text-danger fw-bold">
+                        <strong
+                          >Wajib diisi 0 (nol) untuk pengguna Pria.</strong
+                        >
+                      </td>
+                    </tr>
+                    <tr>
+                      <td><strong>Kadar Glukosa Plasma</strong></td>
+                      <td>mg/dL</td>
+                      <td>Gula darah pada tes toleransi glukosa oral.</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Tekanan Darah Diastolik</strong></td>
+                      <td>mmHg</td>
+                      <td>Tekanan bawah saat jantung beristirahat.</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Ketebalan Lipatan Kulit Trisep</strong></td>
+                      <td>mm</td>
+                      <td>
+                        Data ini sering diabaikan, isi dengan nilai yang relevan
+                        atau nilai rata-rata (misalnya 25-30) jika tidak tahu
+                        pasti.
+                      </td>
+                    </tr>
+                    <tr>
+                      <td><strong>Kadar Insulin Serum</strong></td>
+                      <td>mu U/ml</td>
+                      <td>Insulin 2 jam setelah tes oral glukosa.</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Indeks Massa Tubuh (BMI)</strong></td>
+                      <td>Angka (misalnya 25.5)</td>
+                      <td>Hitung: Berat (kg) / Tinggi² (m).</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Diabetes Pedigree Function</strong></td>
+                      <td>Angka (misalnya 0.456)</td>
+                      <td>Menilai riwayat diabetes dalam keluarga.</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Usia</strong></td>
+                      <td>Tahun</td>
+                      <td>Usia saat ini.</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="alert alert-warning mt-3 interactive-card">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+                <strong>Penting:</strong> Website ini hanya alat prediksi.
+                Selalu konfirmasi hasil dengan dokter.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer class="footer mt-auto py-3 bg-dark">
+      <div class="container">
+        <span class="text-white"
+          >© 2025 Sistem Prediksi Diabetes | Dibuat dengan Bootstrap</span
+        >
+      </div>
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>

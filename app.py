@@ -12,6 +12,7 @@ scaler = pickle.load(open('model/scaler.pkl', 'rb'))
 def index():
     return render_template('index.html')
 
+
 @app.route('/predict', methods=['POST'])
 def predict():
     # Ambil input dari form
@@ -36,6 +37,10 @@ def predict():
         return render_template('result.html', result=result_text)
     except Exception as e:
         return render_template('result.html', result=f"Terjadi kesalahan: {e}")
+
+@app.route('/education')
+def education(): # Nama fungsi ini harus dicocokkan di url_for()
+    return render_template('education.html')
 
 if __name__ == "__main__":
     app.run(debug=True)

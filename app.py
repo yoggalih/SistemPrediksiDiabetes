@@ -30,8 +30,8 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:@localhost/diabete
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Konfigurasi reCAPTCHA v2 (Wajib diganti!)
-app.config['RECAPTCHA_SITE_KEY'] = '6LctWgosAAAAACBPh7DXH6P3o_220BhNMr2LWFLN'  
-app.config['RECAPTCHA_SECRET_KEY'] = '6LctWgosAAAAAAvFWOFup2WAn0HFygryp8K9jd1t' 
+app.config['RECAPTCHA_SITE_KEY'] = 'scret'  
+app.config['RECAPTCHA_SECRET_KEY'] = 'scret' 
 
 db = SQLAlchemy(app)
 login_manager = LoginManager()

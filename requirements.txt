@@ -4,3 +4,8 @@ scikit-learn
 xgboost
 imbalanced-learn
 pandas
+Flask-Login  # Library untuk manajemen sesi user
+Werkzeug     # Library untuk hashing password
+requests
+Flask-SQLAlchemy  # ORM untuk interaksi database
+PyMySQL  # Konektor untuk MySQL

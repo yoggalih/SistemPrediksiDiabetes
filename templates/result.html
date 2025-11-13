@@ -24,19 +24,25 @@
         flex-grow: 1;
       }
       .result-card {
-        max-width: 600px;
+        max-width: 700px;
         margin: 50px auto;
         text-align: center;
         padding: 30px;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         border-radius: 10px;
       }
+      .progress-bar-container {
+        height: 30px;
+        border-radius: 0.5rem;
+        margin-top: 15px;
+        margin-bottom: 20px;
+      }
     </style>
   </head>
   <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
       <div class="container">
-        <a class="navbar-brand" href="{{ url_for('index') }}">
+        <a class="navbar-brand" href="{{ url_for('check_diabetes_page') }}">
           Prediksi Diabetes
         </a>
         <button
@@ -53,7 +59,9 @@
         <div class="collapse navbar-collapse" id="navbarNav">
           <ul class="navbar-nav ms-auto">
             <li class="nav-item">
-              <a class="nav-link" href="{{ url_for('index') }}">Home</a>
+              <a class="nav-link" href="{{ url_for('check_diabetes_page') }}"
+                >Cek Diabetes</a
+              >
             </li>
             <li class="nav-item">
               <a class="nav-link" href="{{ url_for('education') }}"
@@ -68,7 +76,21 @@
       <div class="card result-card">
         <h1 class="card-title mb-4">🔔 Hasil Prediksi Risiko Diabetes</h1>
 
-        {% if prediction == 1 %}
+        {% if result_error %}
+        <div class="alert alert-danger" role="alert">
+          <h4 class="alert-heading">❌ Proses Gagal</h4>
+          <p>{{ result_error }}</p>
+          <hr />
+          <p class="mb-0">
+            Silakan cek kembali input data Anda atau laporkan kesalahan ini.
+          </p>
+        </div>
+        <a
+          href="{{ url_for('check_diabetes_page') }}"
+          class="btn btn-primary mt-3"
+          >Kembali ke Form</a
+        >
+        {% else %} {% if prediction == 1 %}
         <div class="alert alert-danger" role="alert">
           <h4 class="alert-heading">⚠️ Risiko Tinggi Diabetes Ditemukan!</h4>
           <p class="mb-0">
@@ -95,12 +117,79 @@
         {% endif %}
 
         <hr />
-        <a href="{{ url_for('index') }}" class="btn btn-primary"
+
+        <h5 class="text-secondary mt-4">
+          Tingkat Keyakinan Risiko: {{ risk_level }}
+        </h5>
+
+        <p>
+          Probabilitas prediksi risiko diabetes:
+          <strong>{{ probability }}</strong>
+        </p>
+
+        {% set bar_class = 'bg-danger' if probability_raw >= 70 else
+        ('bg-warning' if probability_raw >= 50 else ('bg-info' if
+        probability_raw >= 30 else 'bg-success')) %}
+
+        <div
+          class="progress progress-bar-container"
+          role="progressbar"
+          aria-label="Risk Probability"
+          aria-valuenow="{{ probability_raw|int }}"
+          aria-valuemin="0"
+          aria-valuemax="100"
+        >
+          <div
+            class="progress-bar {{ bar_class }}"
+            style="width: {{ probability_raw }}%"
+          ></div>
+        </div>
+        <hr />
+
+        <h5 class="mt-4 mb-3 text-start text-primary">
+          Data Input untuk Analisis (Faktor Kontributor):
+        </h5>
+        <div class="table-responsive">
+          <table class="table table-bordered table-striped text-start">
+            <thead class="table-light">
+              <tr>
+                <th>Parameter</th>
+                <th>Nilai Anda</th>
+                <th>Keterangan</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for key, value in input_data.items() %}
+              <tr>
+                <td class="fw-bold">{{ key }}</td>
+                <td>{{ value }}</td>
+                {% if key in ['Glucose', 'BMI', 'Insulin',
+                'DiabetesPedigreeFunction'] %}
+                <td class="text-danger">Parameter Medis Utama</td>
+                {% elif key == 'Pregnancies' %}
+                <td>Hanya untuk Wanita</td>
+                {% else %}
+                <td>Parameter Umum</td>
+                {% endif %}
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        <p class="text-muted text-start small">
+          Perhatikan nilai pada **Glukosa** dan **BMI** Anda, ini adalah faktor
+          paling sensitif dalam model prediksi kami.
+        </p>
+        <hr />
+
+        <a href="{{ url_for('check_diabetes_page') }}" class="btn btn-primary"
           >Lakukan Prediksi Baru</a
         >
         <a href="{{ url_for('education') }}" class="btn btn-outline-info ms-2"
           >Lihat Edukasi</a
         >
+
+        {% endif %}
       </div>
     </div>
 

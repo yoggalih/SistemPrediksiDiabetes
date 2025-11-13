@@ -33,6 +33,10 @@
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         border: none;
       }
+      .accordion-button.bg-info.text-white {
+        background-color: #0dcaf0 !important;
+        color: #fff !important;
+      }
     </style>
   </head>
   <body>
@@ -51,7 +55,6 @@
               d="M1.475 9C2.25 10.495 4.542 12 8 12.547v.933a.62.62 0 0 0 .193.447l1.5 1.5a.6.6 0 0 0 .408.173h2.3a.6.6 0 0 0 .408-.173l1.5-1.5a.62.62 0 0 0 .193-.447v-.933c3.458-.547 5.75-2.052 6.525-3.547H1.475ZM8.6 6.55l1.6 4.312a.6.6 0 0 0 .96-.07L13 7.84a.6.6 0 0 0-.25-.992l-2.735-.747-.565-1.42a.6.6 0 0 0-1.092-.09l-1.6 4.312a.6.6 0 0 0-.96.07L4 7.84a.6.6 0 0 0 .25-.992l2.735-.747.565-1.42a.6.6 0 0 0 1.092-.09Z"
             />
           </svg>
-          
         </a>
         <button
           class="navbar-toggler"
@@ -110,12 +113,203 @@
           diabetes menggunakan model Machine Learning.
         </p>
         <hr class="my-4" />
-        <p>
-          <a href="{{ url_for('education') }}" class="btn btn-outline-secondary"
-            >Lihat Panduan Pengisian di Pusat Edukasi</a
-          >
-        </p>
+        <div class="accordion mb-5" id="panduanPengisian">
+          <div class="accordion-item shadow">
+            <h2 class="accordion-header" id="headingOne">
+              <button
+                class="accordion-button bg-info text-white fw-bold"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#collapseOne"
+                aria-expanded="true"
+                aria-controls="collapseOne"
+              >
+                💡 Panduan Penting: Cara Mengisi Data untuk Prediksi Akurat
+                (Wajib Dibaca!)
+              </button>
+            </h2>
+            <div
+              id="collapseOne"
+              class="accordion-collapse collapse show"
+              aria-labelledby="headingOne"
+              data-bs-parent="#panduanPengisian"
+            >
+              <div class="accordion-body">
+                <h5 class="text-success mt-1 mb-3">
+                  🧾 Data Non-Medis (Dapat Diisi Sendiri)
+                </h5>
+                <p class="text-secondary small">
+                  Data-data ini umumnya Anda ketahui tanpa harus melalui
+                  pemeriksaan laboratorium khusus. Pastikan untuk mengisinya
+                  dengan benar.
+                </p>
+                <div class="table-responsive mb-4">
+                  <table class="table table-bordered table-sm table-hover">
+                    <thead class="table-light">
+                      <tr>
+                        <th style="width: 30%">Kolom</th>
+                        <th style="width: 70%">Panduan Pengisian</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td class="fw-bold">1. Jumlah Kehamilan</td>
+                        <td>
+                          Total jumlah kehamilan yang pernah dialami pengguna
+                          wanita. <br />
+                          <strong class="text-danger"
+                            >Pria wajib isi angka 0 (nol).</strong
+                          >
+                        </td>
+                      </tr>
+                      <tr>
+                        <td class="fw-bold">6. Indeks Massa Tubuh (BMI)</td>
+                        <td>
+                          Nilai dari hasil pembagian berat badan (kg) dengan
+                          kuadrat tinggi badan (m²). Anda bisa menggunakan
+                          kalkulator BMI online.
+                        </td>
+                      </tr>
+                      <tr>
+                        <td class="fw-bold">8. Usia (Age)</td>
+                        <td>Umur Anda saat ini dalam tahun (misal: 35).</td>
+                      </tr>
+                      <tr>
+                        <td class="fw-bold">
+                          7. Diabetes Pedigree Function (DPF)
+                        </td>
+                        <td>
+                          Menilai risiko berdasarkan riwayat keluarga (bernilai
+                          antara 0–2).
+                          <ul>
+                            <li>
+                              <small
+                                >Jika ada banyak riwayat diabetes di keluarga
+                                dekat: **0.8 hingga 1.5**</small
+                              >
+                            </li>
+                            <li>
+                              <small
+                                >Jika tidak ada riwayat keluarga: **0.1 hingga
+                                0.3**</small
+                              >
+                            </li>
+                          </ul>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+
+                <hr />
+
+                <h5 class="text-danger mt-4 mb-3">
+                  🧪 Data Medis (Wajib Hasil Pemeriksaan)
+                </h5>
+                <p class="text-secondary small">
+                  Nilai-nilai ini sangat sensitif. Untuk akurasi prediksi
+                  tertinggi, **wajib diisi berdasarkan hasil pemeriksaan medis
+                  (lab/faskes)** yang akurat dari data terakhir Anda.
+                </p>
+
+                [Image of medical test results showing Glucose and Insulin
+                Levels]
+
+                <div class="table-responsive">
+                  <table class="table table-bordered table-sm table-hover">
+                    <thead class="table-light">
+                      <tr>
+                        <th style="width: 30%">Kolom</th>
+                        <th style="width: 70%">Panduan Pengisian</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td class="fw-bold">
+                          2. Kadar Glukosa Plasma (Glucose)
+                        </td>
+                        <td>
+                          Isi berdasarkan hasil **tes gula darah puasa**
+                          terakhir Anda (satuan mg/dL). <br />
+                          <div class="alert alert-warning p-1 mt-1 mb-0">
+                            <small
+                              >Jika tidak tahu: **Wajib tes di layanan
+                              kesehatan**.</small
+                            >
+                          </div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td class="fw-bold">
+                          3. Tekanan Darah Diastolik (Blood Pressure)
+                        </td>
+                        <td>
+                          Nilai tekanan darah 'bawah' (diastolik). Ini adalah
+                          angka **kedua** pada hasil tensi (misal: 120/**80**
+                          mmHg → isi 80).
+                        </td>
+                      </tr>
+                      <tr>
+                        <td class="fw-bold">
+                          5. Kadar Insulin Serum (Insulin)
+                        </td>
+                        <td>
+                          Isi sesuai hasil tes laboratorium Anda (mu U/ml).
+                          <br />
+                          <div class="alert alert-warning p-1 mt-1 mb-0">
+                            <small
+                              >Jika tidak tahu: Anda dapat menggunakan nilai
+                              rata-rata umum **80 hingga 100**, namun akurasi
+                              prediksi akan berkurang.</small
+                            >
+                          </div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td class="fw-bold">
+                          4. Ketebalan Lipatan Kulit Trisep (Skin Thickness)
+                        </td>
+                        <td>
+                          Mengukur ketebalan lemak di belakang lengan atas
+                          (satuan mm). <br />
+                          <div class="alert alert-warning p-1 mt-1 mb-0">
+                            <small
+                              >Jika tidak tahu: Anda dapat menggunakan nilai
+                              rata-rata **20 hingga 25**, namun akurasi prediksi
+                              akan berkurang.</small
+                            >
+                          </div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="card p-3 mx-auto mt-4 mb-4"
+          style="
+            max-width: 650px;
+            border: 1px solid #dc3545;
+            background-color: #f8d7da;
+          "
+        >
+          <p class="mb-0 text-danger" style="font-size: 1.1rem">
+            <strong>PENTING:</strong> Sistem ini hanya berfungsi sebagai **alat
+            bantu untuk deteksi awal risiko diabetes**.
+          </p>
+          <p class="mb-0 text-dark" style="font-size: 0.95rem">
+            **Diagnosis medis akhir harus selalu melalui konsultasi dan
+            pemeriksaan langsung dari dokter atau profesional kesehatan
+            berlisensi.**
+          </p>
+        </div>
+        <hr class="my-4" />
       </div>
+
       <div class="row justify-content-center">
         <div class="col-lg-8">
           <div class="card p-4 card-form">
@@ -126,7 +320,8 @@
               <div class="row mb-3">
                 <div class="col-md-6 mb-3">
                   <label for="pregnancies" class="form-label"
-                    >1. Jumlah Kehamilan</label
+                    >1. Jumlah Kehamilan
+                    <span class="text-danger">*</span></label
                   >
                   <input
                     type="number"
@@ -147,7 +342,8 @@
 
                 <div class="col-md-6 mb-3">
                   <label for="glucose" class="form-label"
-                    >2. Kadar Glukosa Plasma (mg/dL)</label
+                    >2. Kadar Glukosa Plasma (mg/dL)
+                    <span class="text-danger">*</span></label
                   >
                   <input
                     type="number"
@@ -163,7 +359,8 @@
               <div class="row mb-3">
                 <div class="col-md-6 mb-3">
                   <label for="bloodpressure" class="form-label"
-                    >3. Tekanan Darah Diastolik (mmHg)</label
+                    >3. Tekanan Darah Diastolik (mmHg)
+                    <span class="text-danger">*</span></label
                   >
                   <input
                     type="number"
@@ -177,7 +374,8 @@
 
                 <div class="col-md-6 mb-3">
                   <label for="skinthickness" class="form-label"
-                    >4. Ketebalan Lipatan Kulit Trisep (mm)</label
+                    >4. Ketebalan Lipatan Kulit Trisep (mm)
+                    <span class="text-danger">*</span></label
                   >
                   <input
                     type="number"
@@ -193,7 +391,8 @@
               <div class="row mb-3">
                 <div class="col-md-6 mb-3">
                   <label for="insulin" class="form-label"
-                    >5. Kadar Insulin Serum (mu U/ml)</label
+                    >5. Kadar Insulin Serum (mu U/ml)
+                    <span class="text-danger">*</span></label
                   >
                   <input
                     type="number"
@@ -207,7 +406,8 @@
 
                 <div class="col-md-6 mb-3">
                   <label for="bmi" class="form-label"
-                    >6. Indeks Massa Tubuh (BMI)</label
+                    >6. Indeks Massa Tubuh (BMI)
+                    <span class="text-danger">*</span></label
                   >
                   <input
                     type="number"
@@ -223,7 +423,8 @@
               <div class="row mb-3">
                 <div class="col-md-6 mb-3">
                   <label for="dpf" class="form-label"
-                    >7. Diabetes Pedigree Function</label
+                    >7. Diabetes Pedigree Function
+                    <span class="text-danger">*</span></label
                   >
                   <input
                     type="number"
@@ -236,7 +437,9 @@
                 </div>
 
                 <div class="col-md-6 mb-3">
-                  <label for="age" class="form-label">8. Usia</label>
+                  <label for="age" class="form-label"
+                    >8. Usia <span class="text-danger">*</span></label
+                  >
                   <input
                     type="number"
                     step="1"
@@ -246,6 +449,12 @@
                     required
                   />
                 </div>
+              </div>
+
+              <div class="mt-4 mb-3">
+                <p class="text-danger">
+                  <small>* Semua kolom wajib diisi.</small>
+                </p>
               </div>
 
               <div class="d-grid gap-2 mt-4">

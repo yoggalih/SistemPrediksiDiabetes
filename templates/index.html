@@ -12,6 +12,10 @@
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
       rel="stylesheet"
     />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
     <style>
       body {
         font-family: "Poppins", sans-serif; /* Terapkan Poppins */
@@ -80,6 +84,13 @@
                 aria-current="page"
                 href="{{ url_for('check_diabetes_page') }}"
                 >Cek Diabetes</a
+              >
+            </li>
+            <li class="nav-item">
+              <a
+                class="nav-link"
+                href="{{ url_for('prediction_history_page') }}"
+                >Riwayat</a
               >
             </li>
           </ul>
@@ -288,7 +299,6 @@
             </div>
           </div>
         </div>
-
         <div
           class="card p-3 mx-auto mt-4 mb-4"
           style="
@@ -317,6 +327,46 @@
               Input Data Pasien
             </h5>
             <form action="{{ url_for('predict') }}" method="post">
+              <h6 class="text-info mb-3">
+                <i class="fa-solid fa-calculator me-2"></i> Kalkulator BMI
+                (Opsional)
+              </h6>
+              <div class="row mb-3">
+                <div class="col-md-6 mb-3">
+                  <label for="weight" class="form-label"
+                    >Berat Badan (kg)</label
+                  >
+                  <input
+                    type="number"
+                    step="0.1"
+                    name="Weight"
+                    id="weight"
+                    class="form-control"
+                    placeholder="Masukkan dalam kg"
+                  />
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="height" class="form-label"
+                    >Tinggi Badan (meter)</label
+                  >
+                  <input
+                    type="number"
+                    step="0.01"
+                    name="Height"
+                    id="height"
+                    class="form-control"
+                    placeholder="Masukkan dalam meter (misal: 1.75)"
+                  />
+                </div>
+              </div>
+              <div class="alert alert-secondary p-2 small mb-4" id="bmiResult">
+                BMI Anda akan terisi otomatis di bawah jika data BB & TB diisi.
+              </div>
+              <h6 class="text-primary mb-3">
+                <i class="fa-solid fa-file-waveform me-2"></i> Data Prediksi
+                Utama
+              </h6>
+
               <div class="row mb-3">
                 <div class="col-md-6 mb-3">
                   <label for="pregnancies" class="form-label"
@@ -417,6 +467,12 @@
                     class="form-control"
                     required
                   />
+                  <div class="form-text text-danger" id="bmi-warning">
+                    <small
+                      >Pastikan Anda mengisi kolom ini atau menggunakan
+                      Kalkulator BMI di atas.</small
+                    >
+                  </div>
                 </div>
               </div>
 
@@ -476,5 +532,58 @@
       </div>
     </footer>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const weightInput = document.getElementById("weight");
+        const heightInput = document.getElementById("height");
+        const bmiInput = document.getElementById("bmi");
+        const bmiResultDiv = document.getElementById("bmiResult");
+
+        function calculateBMI() {
+          const weight = parseFloat(weightInput.value);
+          const height = parseFloat(heightInput.value);
+
+          // Cek validitas input
+          if (isNaN(weight) || isNaN(height) || height <= 0 || weight <= 0) {
+            bmiInput.value = "";
+            bmiResultDiv.className = "alert alert-secondary p-2 small mb-4";
+            bmiResultDiv.innerHTML =
+              "BMI Anda akan terisi otomatis di bawah jika data BB & TB diisi.";
+            return;
+          }
+
+          // Hitung BMI
+          const bmi = weight / (height * height);
+          const roundedBmi = bmi.toFixed(2);
+          bmiInput.value = roundedBmi; // Isi kolom BMI utama
+
+          let statusText = `BMI Anda adalah **${roundedBmi}**. `;
+          let alertClass = "alert p-2 small mb-4 ";
+
+          if (bmi < 18.5) {
+            statusText += "Kurus. Tingkatkan asupan kalori dan nutrisi.";
+            alertClass += "alert-warning";
+          } else if (bmi >= 18.5 && bmi <= 24.9) {
+            statusText += "Normal. Pertahankan gaya hidup sehat!";
+            alertClass += "alert-success";
+          } else if (bmi >= 25 && bmi <= 29.9) {
+            statusText +=
+              "Kelebihan Berat Badan. Mulai atur pola makan dan olahraga teratur.";
+            alertClass += "alert-warning";
+          } else {
+            statusText +=
+              "Obesitas. **Sangat disarankan** berkonsultasi dengan profesional kesehatan dan melakukan diet ketat.";
+            alertClass += "alert-danger";
+          }
+
+          bmiResultDiv.className = alertClass;
+          bmiResultDiv.innerHTML = `<i class="fa-solid fa-user-doctor me-2"></i> ${statusText}`;
+        }
+
+        weightInput.addEventListener("input", calculateBMI);
+        heightInput.addEventListener("input", calculateBMI);
+      });
+    </script>
   </body>
 </html>

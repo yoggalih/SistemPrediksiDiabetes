@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Riwayat Prediksi | Sistem Prediksi Diabetes</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <style>
+      body {
+        font-family: "Poppins", sans-serif;
+        background-color: #f8f9fa;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+      .main-content {
+        flex-grow: 1;
+        padding-top: 30px;
+        padding-bottom: 50px;
+      }
+      .card-stats {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+      .card-stats:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+      }
+      /* Kelas Warna Badge Status */
+      .status-sangat-tinggi {
+        background-color: #8b0000;
+        color: white;
+        font-weight: bold;
+      }
+      .status-tinggi {
+        background-color: #dc3545; /* Merah */
+        color: white;
+        font-weight: bold;
+      }
+      .status-sedang {
+        background-color: #ffc107; /* Kuning */
+        color: #333;
+        font-weight: bold;
+      }
+      .status-rendah {
+        background-color: #28a745; /* Hijau */
+        color: white;
+        font-weight: bold;
+      }
+      .table-responsive {
+        max-height: 500px; /* Batasi tinggi untuk scrolling */
+        overflow-y: auto;
+      }
+      .table thead th {
+        position: sticky;
+        top: 0;
+        background-color: #f1f1f1;
+        z-index: 10;
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+      <div class="container">
+        <a class="navbar-brand" href="{{ url_for('education') }}">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            fill="currentColor"
+            class="bi bi-heart-pulse-fill"
+            viewBox="0 0 16 16"
+          >
+            <path
+              d="M1.475 9C2.25 10.495 4.542 12 8 12.547v.933a.62.62 0 0 0 .193.447l1.5 1.5a.6.6 0 0 0 .408.173h2.3a.6.6 0 0 0 .408-.173l1.5-1.5a.62.62 0 0 0 .193-.447v-.933c3.458-.547 5.75-2.052 6.525-3.547H1.475ZM8.6 6.55l1.6 4.312a.6.6 0 0 0 .96-.07L13 7.84a.6.6 0 0 0-.25-.992l-2.735-.747-.565-1.42a.6.6 0 0 0-1.092-.09l-1.6 4.312a.6.6 0 0 0-.96.07L4 7.84a.6.6 0 0 0 .25-.992l2.735-.747.565-1.42a.6.6 0 0 0 1.092-.09Z"
+            />
+          </svg>
+        </a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+          aria-controls="navbarNav"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('education') }}"
+                >Pusat Edukasi</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('check_diabetes_page') }}"
+                >Cek Diabetes</a
+              >
+            </li>
+             <li class="nav-item">
+              <a
+                class="nav-link active"
+                aria-current="page"
+                href="{{ url_for('prediction_history_page') }}"
+                >Riwayat</a
+              >
+            </li>
+          </ul>
+
+          <div class="ms-auto d-flex">
+            {% if current_user.is_authenticated %}
+            <span class="navbar-text text-light me-3">
+              Halo, <strong>{{ current_user.username }}</strong>!
+            </span>
+            <a class="btn btn-outline-light" href="{{ url_for('logout') }}"
+              >Logout</a
+            >
+            {% else %}
+            <a class="btn btn-outline-light me-2" href="{{ url_for('login') }}"
+              >Login</a
+            >
+            <a class="btn btn-light" href="{{ url_for('register') }}"
+              >Register</a
+            >
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </nav>
+    <div class="container mt-5 main-content">
+      <h1 class="text-primary mb-4">
+        <i class="fa-solid fa-chart-line me-2"></i> Riwayat Prediksi Pribadi
+      </h1>
+      <p class="lead text-secondary">
+        Lihat kembali data yang pernah Anda masukkan dan hasil prediksinya.
+        Pantau tren risiko diabetes Anda dari waktu ke waktu.
+      </p>
+
+      {% if history|length > 0 %}
+      <div class="row mb-5">
+        {% set total_records = history|length %}
+        {% set high_risk_count = history|selectattr('risk_level', 'in', ['Tinggi', 'Sangat Tinggi'])|list|length %}
+        {% set latest_risk = history[0].risk_level %}
+        
+        <div class="col-md-4">
+          <div class="card text-center text-white bg-primary card-stats">
+            <div class="card-body">
+              <i class="fa-solid fa-calculator fa-2x mb-2"></i>
+              <h5 class="card-title">{{ total_records }}</h5>
+              <p class="card-text">Total Tes</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card text-center text-white bg-warning card-stats" style="background-color: #ff9800 !important;">
+            <div class="card-body">
+              <i class="fa-solid fa-triangle-exclamation fa-2x mb-2"></i>
+              <h5 class="card-title">{{ high_risk_count }}</h5>
+              <p class="card-text">Tes Risiko Tinggi/Sangat Tinggi</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div
+            class="card text-center card-stats {% if 'Sangat Tinggi' in latest_risk %}status-sangat-tinggi{% elif 'Tinggi' in latest_risk %}status-tinggi{% elif 'Sedang' in latest_risk %}status-sedang{% else %}status-rendah{% endif %}"
+          >
+            <div class="card-body">
+              <i class="fa-solid fa-heart-pulse fa-2x mb-2"></i>
+              <h5 class="card-title">{{ latest_risk }}</h5>
+              <p class="card-text">Risiko Tes Terakhir ({{ history[0].prediction_date.strftime('%d %b %Y') }})</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card shadow-lg">
+        <div class="card-header bg-light">
+          <h4 class="mb-0 text-dark">Data Lengkap Riwayat Prediksi</h4>
+        </div>
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-striped table-hover mb-0 small">
+              <thead class="bg-light">
+                <tr>
+                  <th>Tanggal</th>
+                  <th>Risiko</th>
+                  <th>Probabilitas</th>
+                  <th>Glukosa (mg/dL)</th>
+                  <th>BMI</th>
+                  <th>Usia</th>
+                  <th>Kehamilan</th>
+                  <th>Tekanan Darah</th>
+                  <th>Ketebalan Kulit</th>
+                  <th>Insulin</th>
+                  <th>DPF</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for record in history %}
+                <tr>
+                  <td>{{ record.prediction_date.strftime('%d %b %Y %H:%M') }}</td>
+                  <td>
+                    <span
+                      class="badge 
+                      {% if 'Sangat Tinggi' in record.risk_level %} status-sangat-tinggi 
+                      {% elif 'Tinggi' in record.risk_level %} status-tinggi 
+                      {% elif 'Sedang' in record.risk_level %} status-sedang 
+                      {% else %} status-rendah 
+                      {% endif %}"
+                      >{{ record.risk_level }}</span
+                    >
+                  </td>
+                  <td>{{ "%.2f"|format(record.probability) }}%</td>
+                  <td>{{ "%.1f"|format(record.glucose) }}</td>
+                  <td>{{ "%.1f"|format(record.bmi) }}</td>
+                  <td>{{ record.age|int }}</td>
+                  <td>{{ record.pregnancies|int }}</td>
+                  <td>{{ "%.1f"|format(record.blood_pressure) }}</td>
+                  <td>{{ "%.1f"|format(record.skin_thickness) }}</td>
+                  <td>{{ "%.1f"|format(record.insulin) }}</td>
+                  <td>{{ "%.3f"|format(record.dpf) }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      {% else %}
+      <div class="alert alert-info text-center mt-5 p-4">
+        <i class="fa-solid fa-circle-info me-2"></i>
+        Anda belum memiliki riwayat prediksi. Silakan coba
+        <a href="{{ url_for('check_diabetes_page') }}" class="alert-link"
+          >Cek Diabetes</a
+        >
+        sekarang!
+      </div>
+      {% endif %}
+    </div>
+
+    <footer class="footer mt-auto py-3 bg-dark">
+      <div class="container">
+        <span class="text-white"
+          >© 2025 Sistem Prediksi Diabetes | Dibuat dengan Bootstrap</span
+        >
+      </div>
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>

@@ -1,0 +1,7 @@
+# Konfigurasi reCAPTCHA v2 (Wajib diganti!)
+app.config['RECAPTCHA_SITE_KEY'] = '6LctWgosAAAAACBPh7DXH6P3o_220BhNMr2LWFLN'  
+app.config['RECAPTCHA_SECRET_KEY'] = '6LctWgosAAAAAAvFWOFup2WAn0HFygryp8K9jd1t' 
+
+
+# Kunci Rahasia untuk Sesi (HARUS KUAT)
+app.config['SECRET_KEY'] = '6LctWgosAAAAAAvFWOFup2WAn0HFygryp8K9jd1t'

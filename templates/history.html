@@ -109,7 +109,7 @@
                 >Cek Diabetes</a
               >
             </li>
-             <li class="nav-item">
+            <li class="nav-item">
               <a
                 class="nav-link active"
                 aria-current="page"
@@ -150,10 +150,10 @@
 
       {% if history|length > 0 %}
       <div class="row mb-5">
-        {% set total_records = history|length %}
-        {% set high_risk_count = history|selectattr('risk_level', 'in', ['Tinggi', 'Sangat Tinggi'])|list|length %}
-        {% set latest_risk = history[0].risk_level %}
-        
+        {% set total_records = history|length %} {% set high_risk_count =
+        history|selectattr('risk_level', 'in', ['Tinggi', 'Sangat
+        Tinggi'])|list|length %} {% set latest_risk = history[0].risk_level %}
+
         <div class="col-md-4">
           <div class="card text-center text-white bg-primary card-stats">
             <div class="card-body">
@@ -164,7 +164,10 @@
           </div>
         </div>
         <div class="col-md-4">
-          <div class="card text-center text-white bg-warning card-stats" style="background-color: #ff9800 !important;">
+          <div
+            class="card text-center text-white bg-warning card-stats"
+            style="background-color: #ff9800 !important"
+          >
             <div class="card-body">
               <i class="fa-solid fa-triangle-exclamation fa-2x mb-2"></i>
               <h5 class="card-title">{{ high_risk_count }}</h5>
@@ -179,7 +182,10 @@
             <div class="card-body">
               <i class="fa-solid fa-heart-pulse fa-2x mb-2"></i>
               <h5 class="card-title">{{ latest_risk }}</h5>
-              <p class="card-text">Risiko Tes Terakhir ({{ history[0].prediction_date.strftime('%d %b %Y') }})</p>
+              <p class="card-text">
+                Risiko Tes Terakhir ({{ history[0].prediction_date.strftime('%d
+                %b %Y') }})
+              </p>
             </div>
           </div>
         </div>
@@ -204,22 +210,21 @@
                   <th>Ketebalan Kulit</th>
                   <th>Insulin</th>
                   <th>DPF</th>
+                  <th>Detail</th>
                 </tr>
               </thead>
               <tbody>
                 {% for record in history %}
                 <tr>
-                  <td>{{ record.prediction_date.strftime('%d %b %Y %H:%M') }}</td>
+                  <td>
+                    {{ record.prediction_date.strftime('%d %b %Y %H:%M') }}
+                  </td>
                   <td>
                     <span
-                      class="badge 
-                      {% if 'Sangat Tinggi' in record.risk_level %} status-sangat-tinggi 
-                      {% elif 'Tinggi' in record.risk_level %} status-tinggi 
-                      {% elif 'Sedang' in record.risk_level %} status-sedang 
-                      {% else %} status-rendah 
-                      {% endif %}"
-                      >{{ record.risk_level }}</span
+                      class="badge {% if 'Sangat Tinggi' in record.risk_level %} status-sangat-tinggi {% elif 'Tinggi' in record.risk_level %} status-tinggi {% elif 'Sedang' in record.risk_level %} status-sedang {% else %} status-rendah {% endif %}"
                     >
+                      {{ record.risk_level }}
+                    </span>
                   </td>
                   <td>{{ "%.2f"|format(record.probability) }}%</td>
                   <td>{{ "%.1f"|format(record.glucose) }}</td>
@@ -230,6 +235,15 @@
                   <td>{{ "%.1f"|format(record.skin_thickness) }}</td>
                   <td>{{ "%.1f"|format(record.insulin) }}</td>
                   <td>{{ "%.3f"|format(record.dpf) }}</td>
+
+                  <td>
+                    <a
+                      href="{{ url_for('prediction_detail', prediction_id=record.id) }}"
+                      class="btn btn-sm btn-primary"
+                    >
+                      <i class="fa-solid fa-eye"></i> Lihat
+                    </a>
+                  </td>
                 </tr>
                 {% endfor %}
               </tbody>

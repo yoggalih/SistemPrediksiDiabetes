@@ -5,10 +5,11 @@ import numpy as np
 import pickle
 from datetime import datetime # DITAMBAHKAN: Untuk menyimpan tanggal prediksi
 
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for, session, abort
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_sqlalchemy import SQLAlchemy
+
 
 # --- Konfigurasi dan Inisialisasi ---
 app = Flask(__name__)
@@ -275,6 +276,41 @@ def predict():
     except Exception as e:
         return render_template('result.html', result_error=f"Terjadi kesalahan saat memproses data: {e}", **default_context)
 
+@app.route('/history/<int:prediction_id>')
+@login_required
+def prediction_detail(prediction_id):
+    # 1. Cari data berdasarkan ID dan pastikan milik user yang sedang login
+    record = db.session.execute(
+        db.select(PredictionHistory)
+        .filter_by(id=prediction_id, user_id=current_user.id)
+    ).scalar_one_or_none()
+
+    # 2. Jika tidak ketemu, tampilkan error 404
+    if record is None:
+        abort(404)
+
+    # 3. Format ulang data agar sesuai dengan yang diharapkan oleh result.html
+    # Kita harus memetakan nama kolom database (kecil) ke nama tampilan (Kapital)
+    input_data = {
+        'Pregnancies': record.pregnancies,
+        'Glucose': record.glucose,
+        'BloodPressure': record.blood_pressure,
+        'SkinThickness': record.skin_thickness,
+        'Insulin': record.insulin,
+        'BMI': record.bmi,
+        'DiabetesPedigreeFunction': record.dpf,
+        'Age': record.age
+    }
+
+    # 4. Render halaman hasil (result.html) dengan data dari database
+    return render_template(
+        'result.html',
+        prediction=record.prediction_class,
+        probability=f"{record.probability:.2f}%",
+        probability_raw=record.probability,
+        risk_level=record.risk_level,
+        input_data=input_data
+    )
 
 if __name__ == "__main__":
     with app.app_context():

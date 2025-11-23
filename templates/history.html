@@ -237,12 +237,29 @@
                   <td>{{ "%.3f"|format(record.dpf) }}</td>
 
                   <td>
-                    <a
-                      href="{{ url_for('prediction_detail', prediction_id=record.id) }}"
-                      class="btn btn-sm btn-primary"
-                    >
-                      <i class="fa-solid fa-eye"></i> Lihat
-                    </a>
+                    <div class="d-flex gap-1">
+                      <a
+                        href="{{ url_for('prediction_detail', prediction_id=record.id) }}"
+                        class="btn btn-sm btn-primary"
+                        title="Lihat Detail"
+                      >
+                        <i class="fa-solid fa-eye"></i> Lihat
+                      </a>
+
+                      <form
+                        action="{{ url_for('delete_history', prediction_id=record.id) }}"
+                        method="POST"
+                      >
+                        <button
+                          type="submit"
+                          class="btn btn-sm btn-danger"
+                          onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?')"
+                          title="Hapus Data"
+                        >
+                          <i class="fa-solid fa-trash"></i>
+                        </button>
+                      </form>
+                    </div>
                   </td>
                 </tr>
                 {% endfor %}
@@ -262,7 +279,6 @@
       </div>
       {% endif %}
     </div>
-
     <footer class="footer mt-auto py-3 bg-dark">
       <div class="container">
         <span class="text-white"

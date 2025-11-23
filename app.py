@@ -7,7 +7,7 @@ from datetime import datetime # DITAMBAHKAN: Untuk menyimpan tanggal prediksi
 from dotenv import load_dotenv
 load_dotenv()
 
-from flask import Flask, render_template, request, redirect, url_for, session, abort
+from flask import Flask, render_template, request, redirect, url_for, session, abort, flash
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_sqlalchemy import SQLAlchemy
@@ -168,6 +168,7 @@ def logout():
     return redirect(url_for('education'))
 
 
+
 # --- Route Aplikasi Utama ---
 
 @app.route('/')
@@ -308,6 +309,30 @@ def prediction_detail(prediction_id):
         risk_level=record.risk_level,
         input_data=input_data
     )
+    
+@app.route('/history/delete/<int:prediction_id>', methods=['POST'])
+@login_required
+def delete_history(prediction_id):
+    # 1. Cari data berdasarkan ID dan pastikan milik user yang sedang login
+    record = db.session.execute(
+        db.select(PredictionHistory)
+        .filter_by(id=prediction_id, user_id=current_user.id)
+    ).scalar_one_or_none()
+
+    # 2. Jika data ditemukan, hapus dari database
+    if record:
+        try:
+            db.session.delete(record)
+            db.session.commit()
+            flash('Data riwayat berhasil dihapus.', 'success')
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Terjadi kesalahan saat menghapus data: {e}', 'danger')
+    else:
+        flash('Data tidak ditemukan atau Anda tidak memiliki akses.', 'danger')
+
+    # 3. Kembali ke halaman riwayat
+    return redirect(url_for('prediction_history_page'))
 
 if __name__ == "__main__":
     with app.app_context():

@@ -4,6 +4,8 @@ import json
 import numpy as np
 import pickle
 from datetime import datetime # DITAMBAHKAN: Untuk menyimpan tanggal prediksi
+from dotenv import load_dotenv
+load_dotenv()
 
 from flask import Flask, render_template, request, redirect, url_for, session, abort
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
@@ -14,21 +16,16 @@ from flask_sqlalchemy import SQLAlchemy
 # --- Konfigurasi dan Inisialisasi ---
 app = Flask(__name__)
 
-# ====================================================================
-# === KONFIGURASI DATABASE MYSQL (LARAGON) ===
-# GANTI NILAI DI BAWAH INI SESUAI DENGAN PENGATURAN MYSQL LARAGON ANDA!
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:@localhost/diabetes_db' 
-# ====================================================================
-
+# Database
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'sqlite:///database.db') 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-# Konfigurasi reCAPTCHA v2 (Wajib diganti!)
-app.config['RECAPTCHA_SITE_KEY'] = '6LctWgosAAAAACBPh7DXH6P3o_220BhNMr2LWFLN'  
-app.config['RECAPTCHA_SECRET_KEY'] = '6LctWgosAAAAAAvFWOFup2WAn0HFygryp8K9jd1t' 
+# Secret Key
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'kunci_rahasia_default_jika_env_hilang')
 
-
-# Kunci Rahasia untuk Sesi (HARUS KUAT)
-app.config['SECRET_KEY'] = '6LctWgosAAAAAAvFWOFup2WAn0HFygryp8K9jd1t'
+# reCAPTCHA
+app.config['RECAPTCHA_SITE_KEY'] = os.getenv('RECAPTCHA_SITE_KEY')
+app.config['RECAPTCHA_SECRET_KEY'] = os.getenv('RECAPTCHA_SECRET_KEY')
 
 db = SQLAlchemy(app)
 login_manager = LoginManager()

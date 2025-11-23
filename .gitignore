@@ -1,0 +1,36 @@
+# ---------------------------------------
+# 1. KEAMANAN (Sangat Penting)
+# ---------------------------------------
+.env
+.env.local
+instance/
+config.py
+
+# ---------------------------------------
+# 2. PYTHON & VIRTUAL ENVIRONMENT
+# ---------------------------------------
+# Mengabaikan folder venv agar tidak berat saat upload
+venv/
+env/
+ENV/
+
+# Mengabaikan file cache/sampah Python (bytecode)
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# ---------------------------------------
+# 3. FILE DATABASE LOKAL (Opsional)
+# ---------------------------------------
+# Jika Anda punya file sqlite lokal, abaikan agar tidak menimpa data orang lain
+*.db
+*.sqlite
+*.sqlite3
+
+# ---------------------------------------
+# 4. IDE / EDITOR SETTINGS (Agar folder setting VSCode tidak ikut)
+# ---------------------------------------
+.vscode/
+.idea/
+.DS_Store

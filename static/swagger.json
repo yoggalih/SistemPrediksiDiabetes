@@ -1,0 +1,29 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Diabetes Prediction API",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/predict": {
+      "post": {
+        "summary": "Predict diabetes",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Prediction result"
+          }
+        }
+      }
+    }
+  }
+}

@@ -13,6 +13,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_sqlalchemy import SQLAlchemy
 
 
+
 # --- Konfigurasi dan Inisialisasi ---
 app = Flask(__name__)
 
@@ -182,19 +183,35 @@ def check_diabetes_page():
     # index.html berisi form prediksi
     return render_template('index.html', current_user=current_user) 
 
-@app.route('/history') # DITAMBAHKAN: Route untuk melihat riwayat
+@app.route('/history')
 @login_required 
 def prediction_history_page():
-    # Ambil riwayat prediksi pengguna saat ini, diurutkan berdasarkan tanggal terbaru
+    # 1. Ambil data dari database (urutan terbaru untuk Tabel)
     history_records = db.session.execute(
         db.select(PredictionHistory)
         .filter_by(user_id=current_user.id)
         .order_by(PredictionHistory.prediction_date.desc())
     ).scalars().all()
 
-    # Kirim data ke template baru (history.html)
-    return render_template('history.html', history=history_records, current_user=current_user)
+    # 2. Siapkan data untuk Grafik (urutan terlama -> terbaru agar grafik bergerak ke kanan)
+    # Kita balik urutannya menggunakan slicing [::-1]
+    records_for_chart = history_records[::-1]
 
+    # Ekstrak data yang ingin ditampilkan (Tanggal, Probabilitas, dan Glukosa)
+    dates = [rec.prediction_date.strftime('%d-%b-%Y') for rec in records_for_chart]
+    probs = [rec.probability for rec in records_for_chart]
+    glucose = [rec.glucose for rec in records_for_chart]
+
+    # 3. Kirim data ke template dalam format JSON string
+    return render_template(
+        'history.html', 
+        history=history_records, 
+        current_user=current_user,
+        # Menggunakan json.dumps agar list Python berubah jadi Array Javascript
+        chart_dates=json.dumps(dates),
+        chart_probs=json.dumps(probs),
+        chart_glucose=json.dumps(glucose)
+    )
 
 @app.route('/predict', methods=['POST'])
 @login_required 

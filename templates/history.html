@@ -139,6 +139,7 @@
         </div>
       </div>
     </nav>
+
     <div class="container mt-5 main-content">
       <h1 class="text-primary mb-4">
         <i class="fa-solid fa-chart-line me-2"></i> Riwayat Prediksi Pribadi
@@ -149,7 +150,7 @@
       </p>
 
       {% if history|length > 0 %}
-      <div class="row mb-5">
+      <div class="row mb-4">
         {% set total_records = history|length %} {% set high_risk_count =
         history|selectattr('risk_level', 'in', ['Tinggi', 'Sangat
         Tinggi'])|list|length %} {% set latest_risk = history[0].risk_level %}
@@ -190,6 +191,22 @@
           </div>
         </div>
       </div>
+
+      <div class="card shadow-lg mb-5">
+        <div class="card-header bg-white">
+          <h5 class="mb-0 text-primary">
+            <i class="fa-solid fa-chart-area me-2"></i>Grafik Perkembangan
+            Kesehatan
+          </h5>
+        </div>
+        <div class="card-body">
+          <canvas
+            id="healthChart"
+            style="max-height: 350px; width: 100%"
+          ></canvas>
+        </div>
+      </div>
+
       <div class="card shadow-lg">
         <div class="card-header bg-light">
           <h4 class="mb-0 text-dark">Data Lengkap Riwayat Prediksi</h4>
@@ -268,6 +285,103 @@
           </div>
         </div>
       </div>
+
+      <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+      <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Mengambil data JSON yang dikirim dari Backend (app.py)
+            // 'safe' digunakan agar Jinja tidak mengubah karakter kutipan JSON
+            const datesData = {{ chart_dates | safe }};
+            const probsData = {{ chart_probs | safe }};
+            const glucoseData = {{ chart_glucose | safe }};
+
+            const ctx = document.getElementById('healthChart').getContext('2d');
+
+            new Chart(ctx, {
+                type: 'line', // Tipe grafik garis
+                data: {
+                    labels: datesData, // Sumbu X: Tanggal
+                    datasets: [
+                        {
+                            label: 'Risiko Diabetes (%)',
+                            data: probsData,
+                            borderColor: 'rgb(220, 53, 69)', // Merah
+                            backgroundColor: 'rgba(220, 53, 69, 0.1)',
+                            borderWidth: 2,
+                            yAxisID: 'y', // Mengikat ke sumbu kiri
+                            tension: 0.3, // Garis melengkung halus
+                            fill: true,
+                            pointRadius: 4
+                        },
+                        {
+                            label: 'Gula Darah (Glucose)',
+                            data: glucoseData,
+                            borderColor: 'rgb(13, 110, 253)', // Biru Primary Bootstrap
+                            backgroundColor: 'rgba(13, 110, 253, 0.1)',
+                            borderWidth: 2,
+                            yAxisID: 'y1', // Mengikat ke sumbu kanan
+                            tension: 0.3,
+                            borderDash: [5, 5], // Garis putus-putus
+                            pointRadius: 4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.y !== null) {
+                                        label += context.parsed.y;
+                                        if (context.datasetIndex === 0) label += '%'; // Tambah % untuk risiko
+                                        if (context.datasetIndex === 1) label += ' mg/dL'; // Tambah satuan untuk gula
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                            title: { display: true, text: 'Probabilitas Risiko (%)', color: '#dc3545' },
+                            min: 0,
+                            max: 100
+                        },
+                        y1: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            title: { display: true, text: 'Glukosa (mg/dL)', color: '#0d6efd' },
+                            grid: {
+                                drawOnChartArea: false, // Menghilangkan grid tumpang tindih
+                            }
+                        },
+                        x: {
+                            title: { display: true, text: 'Tanggal Pemeriksaan' }
+                        }
+                    }
+                }
+            });
+        });
+      </script>
+
       {% else %}
       <div class="alert alert-info text-center mt-5 p-4">
         <i class="fa-solid fa-circle-info me-2"></i>
@@ -279,6 +393,7 @@
       </div>
       {% endif %}
     </div>
+
     <footer class="footer mt-auto py-3 bg-dark">
       <div class="container">
         <span class="text-white"

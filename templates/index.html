@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Diabetes Prediction System</title>
+    <title>Sistem Prediksi Diabetes</title>
     <link
-      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
       rel="stylesheet"
     />
     <link
@@ -16,512 +16,354 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
     />
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+
     <style>
       body {
-        font-family: "Poppins", sans-serif; /* Terapkan Poppins */
-        background-color: #f8f9fa;
-        min-height: 100vh;
-        display: flex;
-        flex-direction: column;
+        font-family: "Poppins", sans-serif;
+        background-color: #f4f7f6;
+        overflow-x: hidden;
       }
-      .main-content {
-        flex-grow: 1;
+
+      /* --- NAVBAR --- */
+      .navbar {
+        padding: 1rem 0;
+        background-color: #ffffff !important;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05); /* Bayangan halus */
       }
-      .jumbotron {
-        background-color: #e9ecef;
-        padding: 2rem 1rem;
+      
+      .navbar-brand {
+        font-weight: 700;
+        color: #0d6efd !important;
+        font-size: 1.4rem;
+        letter-spacing: -0.5px;
+      }
+
+      .nav-link {
+        font-weight: 500;
+        color: #6c757d !important;
+        margin-left: 1rem;
+        transition: color 0.2s;
+      }
+
+      .nav-link:hover, .nav-link.active {
+        color: #0d6efd !important;
+      }
+
+      /* --- HERO SECTION (LANDING PAGE STYLE) --- */
+      .hero-section {
+        background: linear-gradient(135deg, #e3f2fd 0%, #ffffff 100%);
+        padding: 4rem 0 6rem 0;
+        border-radius: 0 0 50px 50px;
+        margin-bottom: 4rem;
+        position: relative;
+      }
+
+      .hero-title {
+        font-size: 3rem;
+        font-weight: 800;
+        line-height: 1.2;
+        color: #2c3e50;
+        margin-bottom: 1.5rem;
+      }
+
+      .hero-text {
+        font-size: 1.1rem;
+        color: #6c757d;
         margin-bottom: 2rem;
-        border-radius: 0.3rem;
+        line-height: 1.8;
       }
+
+      /* Animasi Gambar Hero */
+      .hero-img {
+        animation: float 6s ease-in-out infinite;
+        max-width: 100%;
+        height: auto;
+      }
+
+      @keyframes float {
+        0% { transform: translateY(0px); }
+        50% { transform: translateY(-20px); }
+        100% { transform: translateY(0px); }
+      }
+
+      /* --- FORM SECTION --- */
       .card-form {
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         border: none;
+        border-radius: 20px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+        background: white;
+        z-index: 10;
+        position: relative;
       }
-      .accordion-button.bg-info.text-white {
-        background-color: #0dcaf0 !important;
-        color: #fff !important;
+
+      .section-header {
+        margin-bottom: 3rem;
+        text-align: center;
+      }
+      
+      .section-header h2 {
+        font-weight: 700;
+        color: #2c3e50;
+      }
+
+      /* --- MODAL (BLUR BACKGROUND) --- */
+      .modal-backdrop.show {
+        opacity: 1 !important;
+        background-color: rgba(33, 37, 41, 0.4);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+      }
+
+      .modal-content {
+        border: none;
+        border-radius: 20px;
+        box-shadow: 0 25px 50px rgba(0,0,0,0.25);
+      }
+
+      .form-control {
+        border-radius: 10px;
+        padding: 0.75rem 1rem;
+        border: 1px solid #dee2e6;
+      }
+      
+      .form-control:focus {
+        box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.15);
+        border-color: #86b7fe;
+      }
+
+      /* Custom Input Groups */
+      .input-group-text {
+        border-radius: 10px 0 0 10px;
+        border: 1px solid #dee2e6;
+        border-right: none;
+        background-color: #fff;
+      }
+      .input-group .form-control {
+        border-radius: 0 10px 10px 0;
+        border-left: none;
       }
     </style>
   </head>
   <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <nav class="navbar navbar-expand-lg navbar-light shadow-sm sticky-top">
       <div class="container">
         <a class="navbar-brand" href="{{ url_for('education') }}">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            fill="currentColor"
-            class="bi bi-heart-pulse-fill"
-            viewBox="0 0 16 16"
-          >
-            <path
-              d="M1.475 9C2.25 10.495 4.542 12 8 12.547v.933a.62.62 0 0 0 .193.447l1.5 1.5a.6.6 0 0 0 .408.173h2.3a.6.6 0 0 0 .408-.173l1.5-1.5a.62.62 0 0 0 .193-.447v-.933c3.458-.547 5.75-2.052 6.525-3.547H1.475ZM8.6 6.55l1.6 4.312a.6.6 0 0 0 .96-.07L13 7.84a.6.6 0 0 0-.25-.992l-2.735-.747-.565-1.42a.6.6 0 0 0-1.092-.09l-1.6 4.312a.6.6 0 0 0-.96.07L4 7.84a.6.6 0 0 0 .25-.992l2.735-.747.565-1.42a.6.6 0 0 0 1.092-.09Z"
-            />
-          </svg>
+          <i class="fa-solid fa-heart-pulse text-danger me-2"></i>DiabCheck
         </a>
         <button
-          class="navbar-toggler"
+          class="navbar-toggler border-0"
           type="button"
           data-bs-toggle="collapse"
           data-bs-target="#navbarNav"
-          aria-controls="navbarNav"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
         >
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav">
+          <ul class="navbar-nav ms-auto align-items-center">
             <li class="nav-item">
-              <a class="nav-link" href="{{ url_for('education') }}"
-                >Pusat Edukasi</a
-              >
+              <a class="nav-link" href="{{ url_for('education') }}">Pusat Edukasi</a>
             </li>
             <li class="nav-item">
-              <a
-                class="nav-link active"
-                aria-current="page"
-                href="{{ url_for('check_diabetes_page') }}"
-                >Cek Diabetes</a
-              >
+              <a class="nav-link active fw-bold" href="{{ url_for('check_diabetes_page') }}">Cek Diabetes</a>
             </li>
             <li class="nav-item">
-              <a
-                class="nav-link"
-                href="{{ url_for('prediction_history_page') }}"
-                >Riwayat</a
-              >
+              <a class="nav-link" href="{{ url_for('prediction_history_page') }}">Riwayat</a>
             </li>
-          </ul>
-
-          <div class="ms-auto d-flex">
+            <li class="nav-item d-none d-lg-block mx-3 text-muted">|</li>
+            
             {% if current_user.is_authenticated %}
-            <span class="navbar-text text-light me-3">
-              Halo, <strong>{{ current_user.username }}</strong>!
-            </span>
-            <a class="btn btn-outline-light" href="{{ url_for('logout') }}"
-              >Logout</a
-            >
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle text-dark fw-bold" href="#" data-bs-toggle="dropdown">
+                   Hai, {{ current_user.username }}
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end border-0 shadow rounded-4 mt-2">
+                    <li><a class="dropdown-item text-danger py-2" href="{{ url_for('logout') }}"><i class="fa-solid fa-power-off me-2"></i>Logout</a></li>
+                </ul>
+            </li>
             {% else %}
-            <a class="btn btn-outline-light me-2" href="{{ url_for('login') }}"
-              >Login</a
-            >
-            <a class="btn btn-light" href="{{ url_for('register') }}"
-              >Register</a
-            >
+            <li class="nav-item">
+              <button class="btn btn-outline-primary btn-sm rounded-pill px-4 fw-bold me-2" data-bs-toggle="modal" data-bs-target="#loginModal">
+                Masuk
+              </button>
+            </li>
+            <li class="nav-item">
+              <button class="btn btn-primary btn-sm rounded-pill px-4 fw-bold shadow-sm" data-bs-toggle="modal" data-bs-target="#registerModal">
+                Daftar
+              </button>
+            </li>
             {% endif %}
-          </div>
+          </ul>
         </div>
       </div>
     </nav>
 
-    <div class="container mt-5 main-content">
-      <div class="jumbotron text-center">
-        <h1 class="display-4 text-primary">Prediksi Risiko Diabetes</h1>
-        <p class="lead">
-          Masukkan data medis Anda untuk memprediksi kemungkinan terkena
-          diabetes menggunakan model Machine Learning.
-        </p>
-        <hr class="my-4" />
-        <div class="accordion mb-5" id="panduanPengisian">
-          <div class="accordion-item shadow">
-            <h2 class="accordion-header" id="headingOne">
-              <button
-                class="accordion-button bg-info text-white fw-bold"
-                type="button"
-                data-bs-toggle="collapse"
-                data-bs-target="#collapseOne"
-                aria-expanded="true"
-                aria-controls="collapseOne"
-              >
-                💡 Panduan Penting: Cara Mengisi Data untuk Prediksi Akurat
-                (Wajib Dibaca!)
-              </button>
-            </h2>
-            <div
-              id="collapseOne"
-              class="accordion-collapse collapse show"
-              aria-labelledby="headingOne"
-              data-bs-parent="#panduanPengisian"
-            >
-              <div class="accordion-body">
-                <h5 class="text-success mt-1 mb-3">
-                  🧾 Data Non-Medis (Dapat Diisi Sendiri)
-                </h5>
-                <p class="text-secondary small">
-                  Data-data ini umumnya Anda ketahui tanpa harus melalui
-                  pemeriksaan laboratorium khusus. Pastikan untuk mengisinya
-                  dengan benar.
-                </p>
-                <div class="table-responsive mb-4">
-                  <table class="table table-bordered table-sm table-hover">
-                    <thead class="table-light">
-                      <tr>
-                        <th style="width: 30%">Kolom</th>
-                        <th style="width: 70%">Panduan Pengisian</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td class="fw-bold">1. Jumlah Kehamilan</td>
-                        <td>
-                          Total jumlah kehamilan yang pernah dialami pengguna
-                          wanita. <br />
-                          <strong class="text-danger"
-                            >Pria wajib isi angka 0 (nol).</strong
-                          >
-                        </td>
-                      </tr>
-                      <tr>
-                        <td class="fw-bold">6. Indeks Massa Tubuh (BMI)</td>
-                        <td>
-                          Nilai dari hasil pembagian berat badan (kg) dengan
-                          kuadrat tinggi badan (m²). Anda bisa menggunakan
-                          kalkulator BMI online.
-                        </td>
-                      </tr>
-                      <tr>
-                        <td class="fw-bold">8. Usia (Age)</td>
-                        <td>Umur Anda saat ini dalam tahun (misal: 35).</td>
-                      </tr>
-                      <tr>
-                        <td class="fw-bold">
-                          7. Diabetes Pedigree Function (DPF)
-                        </td>
-                        <td>
-                          Menilai risiko berdasarkan riwayat keluarga (bernilai
-                          antara 0–2).
-                          <ul>
-                            <li>
-                              <small
-                                >Jika ada banyak riwayat diabetes di keluarga
-                                dekat: **0.8 hingga 1.5**</small
-                              >
-                            </li>
-                            <li>
-                              <small
-                                >Jika tidak ada riwayat keluarga: **0.1 hingga
-                                0.3**</small
-                              >
-                            </li>
-                          </ul>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-
-                <hr />
-
-                <h5 class="text-danger mt-4 mb-3">
-                  🧪 Data Medis (Wajib Hasil Pemeriksaan)
-                </h5>
-                <p class="text-secondary small">
-                  Nilai-nilai ini sangat sensitif. Untuk akurasi prediksi
-                  tertinggi, **wajib diisi berdasarkan hasil pemeriksaan medis
-                  (lab/faskes)** yang akurat dari data terakhir Anda.
-                </p>
-
-                [Image of medical test results showing Glucose and Insulin
-                Levels]
-
-                <div class="table-responsive">
-                  <table class="table table-bordered table-sm table-hover">
-                    <thead class="table-light">
-                      <tr>
-                        <th style="width: 30%">Kolom</th>
-                        <th style="width: 70%">Panduan Pengisian</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td class="fw-bold">
-                          2. Kadar Glukosa Plasma (Glucose)
-                        </td>
-                        <td>
-                          Isi berdasarkan hasil **tes gula darah puasa**
-                          terakhir Anda (satuan mg/dL). <br />
-                          <div class="alert alert-warning p-1 mt-1 mb-0">
-                            <small
-                              >Jika tidak tahu: **Wajib tes di layanan
-                              kesehatan**.</small
-                            >
-                          </div>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td class="fw-bold">
-                          3. Tekanan Darah Diastolik (Blood Pressure)
-                        </td>
-                        <td>
-                          Nilai tekanan darah 'bawah' (diastolik). Ini adalah
-                          angka **kedua** pada hasil tensi (misal: 120/**80**
-                          mmHg → isi 80).
-                        </td>
-                      </tr>
-                      <tr>
-                        <td class="fw-bold">
-                          5. Kadar Insulin Serum (Insulin)
-                        </td>
-                        <td>
-                          Isi sesuai hasil tes laboratorium Anda (mu U/ml).
-                          <br />
-                          <div class="alert alert-warning p-1 mt-1 mb-0">
-                            <small
-                              >Jika tidak tahu: Anda dapat menggunakan nilai
-                              rata-rata umum **80 hingga 100**, namun akurasi
-                              prediksi akan berkurang.</small
-                            >
-                          </div>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td class="fw-bold">
-                          4. Ketebalan Lipatan Kulit Trisep (Skin Thickness)
-                        </td>
-                        <td>
-                          Mengukur ketebalan lemak di belakang lengan atas
-                          (satuan mm). <br />
-                          <div class="alert alert-warning p-1 mt-1 mb-0">
-                            <small
-                              >Jika tidak tahu: Anda dapat menggunakan nilai
-                              rata-rata **20 hingga 25**, namun akurasi prediksi
-                              akan berkurang.</small
-                            >
-                          </div>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
+    <section class="hero-section d-flex align-items-center">
+      <div class="container">
+        <div class="row align-items-center">
+          <div class="col-lg-6 order-2 order-lg-1">
+            <span class="badge bg-primary bg-opacity-10 text-primary mb-3 px-3 py-2 rounded-pill fw-bold">
+                <i class="fa-solid fa-wand-magic-sparkles me-2"></i>AI Powered Prediction
+            </span>
+            <h1 class="hero-title">
+              Ketahui Risiko Diabetes <span class="text-primary">Sejak Dini.</span>
+            </h1>
+            <p class="hero-text">
+              Jangan menunggu gejala muncul. Gunakan teknologi <i>Machine Learning</i> kami untuk menganalisis parameter kesehatan Anda secara akurat, cepat, dan gratis.
+            </p>
+            <div class="d-flex gap-3">
+                <a href="#formPrediksi" class="btn btn-primary btn-lg rounded-pill px-5 py-3 shadow fw-bold">
+                    <i class="fa-solid fa-stethoscope me-2"></i> Mulai Cek
+                </a>
+                <a href="{{ url_for('education') }}" class="btn btn-outline-secondary btn-lg rounded-pill px-4 py-3 fw-bold">
+                    Pelajari Dulu
+                </a>
             </div>
           </div>
+          <div class="col-lg-6 order-1 order-lg-2 text-center mb-5 mb-lg-0">
+            <img src="{{ url_for('static', filename='assets/ilustrasi.png') }}" alt="Medical Illustration" class="hero-img">
+          </div>
         </div>
-        <div
-          class="card p-3 mx-auto mt-4 mb-4"
-          style="
-            max-width: 650px;
-            border: 1px solid #dc3545;
-            background-color: #f8d7da;
-          "
-        >
-          <p class="mb-0 text-danger" style="font-size: 1.1rem">
-            <strong>PENTING:</strong> Sistem ini hanya berfungsi sebagai **alat
-            bantu untuk deteksi awal risiko diabetes**.
-          </p>
-          <p class="mb-0 text-dark" style="font-size: 0.95rem">
-            **Diagnosis medis akhir harus selalu melalui konsultasi dan
-            pemeriksaan langsung dari dokter atau profesional kesehatan
-            berlisensi.**
-          </p>
-        </div>
-        <hr class="my-4" />
+      </div>
+    </section>
+
+    <div class="container pb-5" id="formPrediksi">
+      
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <div class="alert alert-{{ category }} alert-dismissible fade show shadow-sm rounded-3 mb-4" role="alert">
+              {{ message }}
+              <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+
+      <div class="section-header">
+        <h2>Lengkapi Data Medis</h2>
+        <p class="text-muted">Data Anda diproses secara privat dan hanya digunakan untuk prediksi.</p>
       </div>
 
       <div class="row justify-content-center">
+        
+        <div class="col-lg-4 mb-4">
+            <div class="card border-0 shadow-sm rounded-4 mb-4 text-center overflow-hidden bg-primary bg-opacity-10">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold text-primary mb-3">Hidup Sehat, Bahagia!</h5>
+                    <img src="{{ url_for('static', filename='assets/sehat.png') }}" class="img-fluid mb-3" style="max-height: 180px;" alt="Healthy Lifestyle">
+                    <p class="small text-muted mb-0">"Kesehatan bukan segalanya, tapi tanpa kesehatan, segalanya bukan apa-apa."</p>
+                </div>
+            </div>
+
+            <div class="accordion shadow-sm rounded-4 overflow-hidden" id="panduanPengisian">
+                <div class="accordion-item border-0">
+                  <h2 class="accordion-header">
+                    <button class="accordion-button bg-white text-dark fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne">
+                        <i class="fa-solid fa-circle-question me-2 text-warning"></i> Panduan Pengisian
+                    </button>
+                  </h2>
+                  <div id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="#panduanPengisian">
+                    <div class="accordion-body bg-white small text-secondary">
+                        <ul class="ps-3 mb-0">
+                            <li class="mb-2"><strong>Kehamilan:</strong> Khusus wanita, pria isi 0.</li>
+                            <li class="mb-2"><strong>Glukosa:</strong> Gula darah puasa (mg/dL).</li>
+                            <li class="mb-2"><strong>Tekanan Darah:</strong> Diastolik/bawah (mm Hg).</li>
+                            <li class="mb-2"><strong>BMI:</strong> Gunakan kalkulator di form.</li>
+                            <li><strong>DPF:</strong> Riwayat genetik (0.1 - 2.5).</li>
+                        </ul>
+                    </div>
+                  </div>
+                </div>
+            </div>
+        </div>
+
         <div class="col-lg-8">
-          <div class="card p-4 card-form">
-            <h5 class="card-title mb-4 text-center text-secondary">
-              Input Data Pasien
-            </h5>
+          <div class="card p-4 p-md-5 card-form">
             <form action="{{ url_for('predict') }}" method="post">
-              <h6 class="text-info mb-3">
-                <i class="fa-solid fa-calculator me-2"></i> Kalkulator BMI
-                (Opsional)
-              </h6>
-              <div class="row mb-3">
-                <div class="col-md-6 mb-3">
-                  <label for="weight" class="form-label"
-                    >Berat Badan (kg)</label
-                  >
-                  <input
-                    type="number"
-                    step="0.1"
-                    name="Weight"
-                    id="weight"
-                    class="form-control"
-                    placeholder="Masukkan dalam kg"
-                  />
-                </div>
-                <div class="col-md-6 mb-3">
-                  <label for="height" class="form-label"
-                    >Tinggi Badan (meter)</label
-                  >
-                  <input
-                    type="number"
-                    step="0.01"
-                    name="Height"
-                    id="height"
-                    class="form-control"
-                    placeholder="Masukkan dalam meter (misal: 1.75)"
-                  />
-                </div>
+              
+              <div class="bg-light p-4 rounded-4 mb-4 border border-dashed">
+                  <div class="d-flex align-items-center mb-3">
+                      <i class="fa-solid fa-calculator text-primary me-2"></i>
+                      <h6 class="mb-0 fw-bold text-dark">Kalkulator BMI</h6>
+                  </div>
+                  <div class="row g-2">
+                      <div class="col-md-5">
+                          <input type="number" step="0.1" id="weight" class="form-control" placeholder="Berat (kg)">
+                      </div>
+                      <div class="col-md-5">
+                          <input type="number" step="0.01" id="height" class="form-control" placeholder="Tinggi (m)">
+                      </div>
+                      <div class="col-md-2 d-grid">
+                          <button type="button" class="btn btn-dark text-white btn-sm" id="btnHitungBMI">Hitung</button>
+                      </div>
+                  </div>
+                  <div id="bmiResult" class="mt-2 text-center small fw-bold"></div>
               </div>
-              <div class="d-grid gap-2 mb-3">
-                <button
-                  type="button"
-                  class="btn btn-info text-white"
-                  id="btnHitungBMI"
-                >
-                  <i class="fa-solid fa-calculator me-2"></i>Hitung BMI
-                </button>
-              </div>
-              <h6 class="text-primary mb-3">
-                <i class="fa-solid fa-file-waveform me-2"></i> Data Prediksi
-                Utama
-              </h6>
 
-              <div class="row mb-3">
-                <div class="col-md-6 mb-3">
-                  <label for="pregnancies" class="form-label"
-                    >1. Jumlah Kehamilan
-                    <span class="text-danger">*</span></label
-                  >
-                  <input
-                    type="number"
-                    step="1"
-                    name="Pregnancies"
-                    id="pregnancies"
-                    class="form-control"
-                    required
-                  />
-                  <div class="form-text text-muted">
-                    <small
-                      >Hanya berlaku untuk wanita.
-                      <strong>Pria diwajibkan mengisi angka 0 (nol)</strong
-                      >.</small
-                    >
+              <div class="row g-4">
+                <div class="col-md-6">
+                  <label class="form-label small fw-bold text-muted">1. Jumlah Kehamilan</label>
+                  <div class="input-group">
+                      <span class="input-group-text"><i class="fa-solid fa-baby"></i></span>
+                      <input type="number" name="Pregnancies" class="form-control" placeholder="0" required>
                   </div>
                 </div>
-
-                <div class="col-md-6 mb-3">
-                  <label for="glucose" class="form-label"
-                    >2. Kadar Glukosa Plasma (mg/dL)
-                    <span class="text-danger">*</span></label
-                  >
-                  <input
-                    type="number"
-                    step="0.01"
-                    name="Glucose"
-                    id="glucose"
-                    class="form-control"
-                    required
-                  />
+                <div class="col-md-6">
+                  <label class="form-label small fw-bold text-muted">2. Glukosa (mg/dL)</label>
+                  <div class="input-group">
+                      <span class="input-group-text"><i class="fa-solid fa-droplet text-danger"></i></span>
+                      <input type="number" step="0.01" name="Glucose" class="form-control" required>
+                  </div>
                 </div>
-              </div>
-
-              <div class="row mb-3">
-                <div class="col-md-6 mb-3">
-                  <label for="bloodpressure" class="form-label"
-                    >3. Tekanan Darah Diastolik (mmHg)
-                    <span class="text-danger">*</span></label
-                  >
-                  <input
-                    type="number"
-                    step="0.01"
-                    name="BloodPressure"
-                    id="bloodpressure"
-                    class="form-control"
-                    required
-                  />
+                <div class="col-md-6">
+                  <label class="form-label small fw-bold text-muted">3. Tekanan Darah (mm Hg)</label>
+                  <div class="input-group">
+                      <span class="input-group-text"><i class="fa-solid fa-heart-pulse text-danger"></i></span>
+                      <input type="number" step="0.01" name="BloodPressure" class="form-control" required>
+                  </div>
                 </div>
-
-                <div class="col-md-6 mb-3">
-                  <label for="skinthickness" class="form-label"
-                    >4. Ketebalan Lipatan Kulit Trisep (mm)
-                    <span class="text-danger">*</span></label
-                  >
-                  <input
-                    type="number"
-                    step="0.01"
-                    name="SkinThickness"
-                    id="skinthickness"
-                    class="form-control"
-                    required
-                  />
+                <div class="col-md-6">
+                  <label class="form-label small fw-bold text-muted">4. Tebal Kulit (mm)</label>
+                  <div class="input-group">
+                      <span class="input-group-text"><i class="fa-solid fa-ruler-vertical"></i></span>
+                      <input type="number" step="0.01" name="SkinThickness" class="form-control" required>
+                  </div>
                 </div>
-              </div>
-
-              <div class="row mb-3">
-                <div class="col-md-6 mb-3">
-                  <label for="insulin" class="form-label"
-                    >5. Kadar Insulin Serum (mu U/ml)
-                    <span class="text-danger">*</span></label
-                  >
-                  <input
-                    type="number"
-                    step="0.01"
-                    name="Insulin"
-                    id="insulin"
-                    class="form-control"
-                    required
-                  />
+                <div class="col-md-6">
+                  <label class="form-label small fw-bold text-muted">5. Insulin (mu U/ml)</label>
+                  <div class="input-group">
+                      <span class="input-group-text"><i class="fa-solid fa-syringe"></i></span>
+                      <input type="number" step="0.01" name="Insulin" class="form-control" required>
+                  </div>
                 </div>
-
-                <div class="col-md-6 mb-3">
-                  <label for="bmi" class="form-label"
-                    >6. Indeks Massa Tubuh (BMI)
-                    <span class="text-danger">*</span></label
-                  >
-                  <input
-                    type="number"
-                    step="0.01"
-                    name="BMI"
-                    id="bmi"
-                    class="form-control"
-                    required
-                  />
-                  <div class="form-text text-danger" id="bmi-warning">
-                    <small
-                      >Pastikan Anda mengisi kolom ini atau menggunakan
-                      Kalkulator BMI di atas.</small
-                    >
+                <div class="col-md-6">
+                  <label class="form-label small fw-bold text-muted">6. BMI (Body Mass Index)</label>
+                  <div class="input-group">
+                      <span class="input-group-text bg-light"><i class="fa-solid fa-weight-scale"></i></span>
+                      <input type="number" step="0.01" name="BMI" id="bmi" class="form-control bg-light" readonly required>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label small fw-bold text-muted">7. Diabetes Pedigree</label>
+                  <div class="input-group">
+                      <span class="input-group-text"><i class="fa-solid fa-dna text-success"></i></span>
+                      <input type="number" step="0.001" name="DiabetesPedigreeFunction" class="form-control" placeholder="0.5" required>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label small fw-bold text-muted">8. Usia (Tahun)</label>
+                  <div class="input-group">
+                      <span class="input-group-text"><i class="fa-solid fa-calendar"></i></span>
+                      <input type="number" name="Age" class="form-control" required>
                   </div>
                 </div>
               </div>
 
-              <div class="row mb-3">
-                <div class="col-md-6 mb-3">
-                  <label for="dpf" class="form-label"
-                    >7. Diabetes Pedigree Function
-                    <span class="text-danger">*</span></label
-                  >
-                  <input
-                    type="number"
-                    step="0.001"
-                    name="DiabetesPedigreeFunction"
-                    id="dpf"
-                    class="form-control"
-                    required
-                  />
-                </div>
-
-                <div class="col-md-6 mb-3">
-                  <label for="age" class="form-label"
-                    >8. Usia <span class="text-danger">*</span></label
-                  >
-                  <input
-                    type="number"
-                    step="1"
-                    name="Age"
-                    id="age"
-                    class="form-control"
-                    required
-                  />
-                </div>
-              </div>
-
-              <div class="mt-4 mb-3">
-                <p class="text-danger">
-                  <small>* Semua kolom wajib diisi.</small>
-                </p>
-              </div>
-
-              <div class="d-grid gap-2 mt-4">
-                <button type="submit" class="btn btn-primary btn-lg">
-                  Prediksi Sekarang
+              <div class="d-grid mt-5">
+                <button type="submit" class="btn btn-primary btn-lg rounded-pill py-3 shadow fw-bold hover-scale">
+                  <i class="fa-solid fa-magnifying-glass-chart me-2"></i> Analisis Risiko Sekarang
                 </button>
               </div>
             </form>
@@ -530,13 +372,90 @@
       </div>
     </div>
 
-    <footer class="footer mt-auto py-3 bg-dark">
+    <footer class="bg-white border-top py-4 text-center mt-auto">
       <div class="container">
-        <span class="text-white"
-          >© 2025 Sistem Prediksi Diabetes | Dibuat dengan Bootstrap</span
-        >
+        <p class="text-muted mb-0 small">© 2025 Sistem Prediksi Diabetes | Galih Yoga Kurniawan</p>
       </div>
     </footer>
+
+    <div class="modal fade" id="loginModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" style="max-width: 420px;">
+        <div class="modal-content">
+          <div class="modal-header border-0 pb-0">
+             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body px-4 pb-4 pt-0 text-center">
+            <div class="mb-3 text-primary">
+                <i class="fa-solid fa-circle-user fa-3x"></i>
+            </div>
+            <h4 class="fw-bold mb-1">Selamat Datang Kembali</h4>
+            <p class="text-muted small mb-4">Masuk untuk mengakses riwayat prediksi</p>
+            
+            <form method="POST" action="{{ url_for('login') }}">
+                <div class="form-floating mb-3 text-start">
+                  <input type="text" name="username" class="form-control" id="loginUser" placeholder="Username" required>
+                  <label for="loginUser">Username</label>
+                </div>
+                <div class="form-floating mb-3 text-start">
+                  <input type="password" name="password" class="form-control" id="loginPass" placeholder="Password" required>
+                  <label for="loginPass">Password</label>
+                </div>
+                
+                <div class="mb-3 d-flex justify-content-center" style="transform: scale(0.9);">
+                    <div class="g-recaptcha" data-sitekey="{{ site_key }}"></div>
+                </div>
+
+                <div class="d-grid mb-3">
+                  <button type="submit" class="btn btn-primary btn-lg rounded-3 fw-bold">Masuk</button>
+                </div>
+            </form>
+            <div class="text-center pt-2 border-top">
+                <small class="text-muted">Belum punya akun? <a href="#" class="text-decoration-none fw-bold" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#registerModal">Daftar Sekarang</a></small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="registerModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" style="max-width: 420px;">
+        <div class="modal-content">
+          <div class="modal-header border-0 pb-0">
+             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body px-4 pb-4 pt-0 text-center">
+            <div class="mb-3 text-success">
+                <i class="fa-solid fa-user-plus fa-3x"></i>
+            </div>
+            <h4 class="fw-bold mb-1">Buat Akun Baru</h4>
+            <p class="text-muted small mb-4">Daftar gratis dalam hitungan detik</p>
+            
+            <form method="POST" action="{{ url_for('register') }}">
+                <div class="form-floating mb-3 text-start">
+                  <input type="text" name="username" class="form-control" id="regUser" placeholder="Username Baru" required>
+                  <label for="regUser">Username Baru</label>
+                </div>
+                <div class="form-floating mb-3 text-start">
+                  <input type="password" name="password" class="form-control" id="regPass" placeholder="Password" required>
+                  <label for="regPass">Password</label>
+                </div>
+
+                <div class="mb-3 d-flex justify-content-center" style="transform: scale(0.9);">
+                   <div class="g-recaptcha" data-sitekey="{{ site_key }}"></div>
+                </div>
+
+                <div class="d-grid mb-3">
+                  <button type="submit" class="btn btn-success btn-lg rounded-3 fw-bold">Daftar Akun</button>
+                </div>
+            </form>
+            <div class="text-center pt-2 border-top">
+                <small class="text-muted">Sudah punya akun? <a href="#" class="text-decoration-none fw-bold text-success" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#loginModal">Login</a></small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
@@ -545,50 +464,32 @@
         const heightInput = document.getElementById("height");
         const bmiInput = document.getElementById("bmi");
         const bmiResultDiv = document.getElementById("bmiResult");
+        const btnHitung = document.getElementById("btnHitungBMI");
 
         function calculateBMI() {
           const weight = parseFloat(weightInput.value);
           const height = parseFloat(heightInput.value);
 
-          // Cek validitas input
           if (isNaN(weight) || isNaN(height) || height <= 0 || weight <= 0) {
-            bmiInput.value = "";
-            bmiResultDiv.className = "alert alert-secondary p-2 small mb-4";
-            bmiResultDiv.innerHTML =
-              "BMI Anda akan terisi otomatis di bawah jika data BB & TB diisi.";
+            bmiResultDiv.innerHTML = "<span class='text-danger'>*Masukkan angka yang valid.</span>";
             return;
           }
 
-          // Hitung BMI
           const bmi = weight / (height * height);
           const roundedBmi = bmi.toFixed(2);
-          bmiInput.value = roundedBmi; // Isi kolom BMI utama
+          bmiInput.value = roundedBmi;
 
-          let statusText = `BMI Anda adalah **${roundedBmi}**. `;
-          let alertClass = "alert p-2 small mb-4 ";
+          let status = "";
+          let colorClass = "";
+          if (bmi < 18.5) { status = "Kurus"; colorClass = "text-warning"; }
+          else if (bmi <= 24.9) { status = "Normal"; colorClass = "text-success"; }
+          else if (bmi <= 29.9) { status = "Gemuk"; colorClass = "text-warning"; }
+          else { status = "Obesitas"; colorClass = "text-danger"; }
 
-          if (bmi < 18.5) {
-            statusText += "Kurus. Tingkatkan asupan kalori dan nutrisi.";
-            alertClass += "alert-warning";
-          } else if (bmi >= 18.5 && bmi <= 24.9) {
-            statusText += "Normal. Pertahankan gaya hidup sehat!";
-            alertClass += "alert-success";
-          } else if (bmi >= 25 && bmi <= 29.9) {
-            statusText +=
-              "Kelebihan Berat Badan. Mulai atur pola makan dan olahraga teratur.";
-            alertClass += "alert-warning";
-          } else {
-            statusText +=
-              "Obesitas. **Sangat disarankan** berkonsultasi dengan profesional kesehatan dan melakukan diet ketat.";
-            alertClass += "alert-danger";
-          }
-
-          bmiResultDiv.className = alertClass;
-          bmiResultDiv.innerHTML = `<i class="fa-solid fa-user-doctor me-2"></i> ${statusText}`;
+          bmiResultDiv.innerHTML = `Hasil BMI: <span class="h5 ${colorClass}">${roundedBmi}</span> (${status})`;
         }
 
-        weightInput.addEventListener("input", calculateBMI);
-        heightInput.addEventListener("input", calculateBMI);
+        if(btnHitung) btnHitung.addEventListener("click", calculateBMI);
       });
     </script>
   </body>

@@ -3,7 +3,7 @@ import requests
 import json
 import numpy as np
 import pickle
-from datetime import datetime # DITAMBAHKAN: Untuk menyimpan tanggal prediksi
+from datetime import datetime, timedelta
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -11,8 +11,6 @@ from flask import Flask, render_template, request, redirect, url_for, session, a
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_sqlalchemy import SQLAlchemy
-
-
 
 # --- Konfigurasi dan Inisialisasi ---
 app = Flask(__name__)
@@ -31,8 +29,8 @@ app.config['RECAPTCHA_SECRET_KEY'] = os.getenv('RECAPTCHA_SECRET_KEY')
 db = SQLAlchemy(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
-login_manager.login_view = 'login' 
-login_manager.login_message = "Anda harus login untuk mengakses halaman ini."
+login_manager.login_view = 'check_diabetes_page' 
+login_manager.login_message = "Silakan login terlebih dahulu untuk mengakses halaman ini."
 
 # Load model & scaler
 try:
@@ -43,23 +41,21 @@ except FileNotFoundError:
     model = None
     scaler = None
 
-# --- MODEL DATABASE USER & HISTORY (DITAMBAHKAN) ---
+# --- MODEL DATABASE USER & HISTORY ---
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     password_hash = db.Column(db.String(512), nullable=False)
-    # Tambahkan relasi ke PredictionHistory
-    predictions = db.relationship('PredictionHistory', backref='predictor', lazy='dynamic') # DITAMBAHKAN
+    predictions = db.relationship('PredictionHistory', backref='predictor', lazy='dynamic')
 
     def __init__(self, username, password_hash):
         self.username = username
         self.password_hash = password_hash
 
-class PredictionHistory(db.Model): # DITAMBAHKAN
-    """Model untuk menyimpan riwayat hasil prediksi setiap pengguna."""
+class PredictionHistory(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    prediction_date = db.Column(db.DateTime, default=datetime.utcnow)
+    prediction_date = db.Column(db.DateTime, default=lambda: datetime.utcnow() + timedelta(hours=7))
     
     # Data Input
     pregnancies = db.Column(db.Float, nullable=False)
@@ -68,23 +64,23 @@ class PredictionHistory(db.Model): # DITAMBAHKAN
     skin_thickness = db.Column(db.Float, nullable=False)
     insulin = db.Column(db.Float, nullable=False)
     bmi = db.Column(db.Float, nullable=False)
-    dpf = db.Column(db.Float, nullable=False) # DiabetesPedigreeFunction
+    dpf = db.Column(db.Float, nullable=False)
     age = db.Column(db.Float, nullable=False)
     
     # Data Hasil
-    prediction_class = db.Column(db.Integer, nullable=False) # 0 or 1
+    prediction_class = db.Column(db.Integer, nullable=False)
     probability = db.Column(db.Float, nullable=False)
     risk_level = db.Column(db.String(50), nullable=False)
     
 @login_manager.user_loader
 def load_user(user_id):
-    """Callback untuk memuat pengguna dari ID (menggunakan DB)."""
     return db.session.get(User, int(user_id))
 
 
-# --- Fungsi reCAPTCHA Validation (TETAP) ---
+# --- Fungsi Helper & Logika Bisnis ---
+
 def verify_recaptcha(response_token):
-    """Mengirim token reCAPTCHA ke Google untuk diverifikasi."""
+    """Verifikasi reCAPTCHA."""
     payload = {
         'secret': app.config['RECAPTCHA_SECRET_KEY'],
         'response': response_token
@@ -97,77 +93,139 @@ def verify_recaptcha(response_token):
         print(f"Error during reCAPTCHA verification: {e}")
         return False
 
+def generate_health_advice(inputs):
+    """
+    [FITUR BARU]
+    Menghasilkan list saran kesehatan personal berdasarkan nilai input.
+    """
+    advice = []
+    
+    # 1. Cek BMI (Berat Badan)
+    bmi = inputs.get('BMI', 0)
+    if bmi > 30:
+        advice.append({
+            'type': 'danger', 
+            'icon': 'fa-weight-scale',
+            'title': 'Indeks Massa Tubuh (Obesitas)',
+            'text': 'BMI Anda menunjukkan obesitas. Fokus utama adalah penurunan berat badan bertahap melalui defisit kalori dan olahraga kardio (jalan cepat/berenang).'
+        })
+    elif bmi > 25:
+        advice.append({
+            'type': 'warning',
+            'icon': 'fa-weight-scale',
+            'title': 'Indeks Massa Tubuh (Overweight)',
+            'text': 'Berat badan Anda berlebih. Disarankan mengurangi makanan berlemak/gorengan dan rutin bergerak minimal 30 menit sehari.'
+        })
+        
+    # 2. Cek Glukosa
+    glucose = inputs.get('Glucose', 0)
+    if glucose > 200:
+        advice.append({
+            'type': 'danger',
+            'icon': 'fa-droplet',
+            'title': 'Kadar Gula Darah Sangat Tinggi',
+            'text': 'Kadar gula Anda sangat tinggi. Segera konsultasikan ke dokter untuk pemeriksaan HbA1c dan kemungkinan terapi obat.'
+        })
+    elif glucose > 140:
+        advice.append({
+            'type': 'warning',
+            'icon': 'fa-droplet',
+            'title': 'Kadar Gula Darah Tinggi',
+            'text': 'Kurangi konsumsi gula sederhana (sirup, minuman manis, kue) dan ganti karbohidrat putih dengan karbohidrat kompleks (beras merah/gandum).'
+        })
 
-# --- Route Authentication (TETAP) ---
+    # 3. Cek Tekanan Darah (Diastolik)
+    bp = inputs.get('BloodPressure', 0)
+    if bp > 90:
+        advice.append({
+            'type': 'warning',
+            'icon': 'fa-heart-pulse',
+            'title': 'Tekanan Darah (Diastolik Tinggi)',
+            'text': 'Waspada hipertensi. Kurangi asupan garam (natrium) dan hindari makanan olahan/kalengan. Kelola stres dengan baik.'
+        })
 
-@app.route('/login', methods=['GET', 'POST'])
+    # 4. Cek Umur
+    age = inputs.get('Age', 0)
+    if age > 45:
+        advice.append({
+            'type': 'info',
+            'icon': 'fa-calendar-check',
+            'title': 'Faktor Usia',
+            'text': 'Di usia >45 tahun, metabolisme melambat. Penting untuk melakukan check-up rutin (gula darah, kolesterol) minimal 6 bulan sekali.'
+        })
+
+    # Jika tidak ada masalah spesifik
+    if not advice:
+        advice.append({
+            'type': 'success',
+            'icon': 'fa-check-circle',
+            'title': 'Kondisi Parameter Baik',
+            'text': 'Parameter kesehatan Anda terlihat dalam batas wajar. Pertahankan gaya hidup sehat, pola makan seimbang, dan olahraga rutin Anda!'
+        })
+        
+    return advice
+
+
+# --- Route Authentication ---
+
+@app.route('/login', methods=['POST'])
 def login():
     if current_user.is_authenticated:
         return redirect(url_for('check_diabetes_page'))
 
-    site_key = app.config['RECAPTCHA_SITE_KEY']
+    username = request.form.get('username')
+    password = request.form.get('password')
+    recaptcha_token = request.form.get('g-recaptcha-response')
+    
+    if not recaptcha_token or not verify_recaptcha(recaptcha_token):
+        flash('Verifikasi CAPTCHA gagal. Silakan coba lagi.', 'danger')
+        return redirect(url_for('check_diabetes_page'))
 
-    if request.method == 'POST':
-        username = request.form.get('username')
-        password = request.form.get('password')
-        recaptcha_token = request.form.get('g-recaptcha-response')
-        
-        # 1. Validasi reCAPTCHA
-        if not recaptcha_token or not verify_recaptcha(recaptcha_token):
-            return render_template('login.html', error='Verifikasi CAPTCHA gagal. Silakan coba lagi.', site_key=site_key)
-
-        # 2. Validasi User dan Password (Menggunakan DB)
-        user = db.session.execute(db.select(User).filter_by(username=username)).scalar_one_or_none()
-        
-        if user and check_password_hash(user.password_hash, password):
-            login_user(user)
-            next_page = request.args.get('next')
-            return redirect(next_page or url_for('check_diabetes_page'))
-        else:
-            return render_template('login.html', error='Nama pengguna atau kata sandi salah.', site_key=site_key)
-
-    return render_template('login.html', site_key=site_key)
+    user = db.session.execute(db.select(User).filter_by(username=username)).scalar_one_or_none()
+    
+    if user and check_password_hash(user.password_hash, password):
+        login_user(user)
+        flash('Login berhasil! Selamat datang.', 'success')
+        return redirect(url_for('check_diabetes_page'))
+    else:
+        flash('Username atau password salah.', 'danger')
+        return redirect(url_for('check_diabetes_page'))
 
 
-@app.route('/register', methods=['GET', 'POST'])
+@app.route('/register', methods=['POST'])
 def register():
     if current_user.is_authenticated:
         return redirect(url_for('check_diabetes_page'))
 
-    site_key = app.config['RECAPTCHA_SITE_KEY']
+    username = request.form.get('username')
+    password = request.form.get('password')
+    recaptcha_token = request.form.get('g-recaptcha-response')
 
-    if request.method == 'POST':
-        username = request.form.get('username')
-        password = request.form.get('password')
-        recaptcha_token = request.form.get('g-recaptcha-response')
-
-        # 1. Validasi reCAPTCHA
-        if not recaptcha_token or not verify_recaptcha(recaptcha_token):
-            return render_template('register.html', error='Verifikasi CAPTCHA gagal. Silakan coba lagi.', site_key=site_key)
-
-        # 2. Cek apakah username sudah ada (Menggunakan DB)
-        existing_user = db.session.execute(db.select(User).filter_by(username=username)).scalar_one_or_none()
-        if existing_user:
-            return render_template('register.html', error='Nama pengguna sudah terdaftar.', site_key=site_key)
-
-        # 3. Buat user baru (Menggunakan DB)
-        hashed_password = generate_password_hash(password)
-        new_user = User(username=username, password_hash=hashed_password) 
-
-        db.session.add(new_user)
-        db.session.commit()
-
-        login_user(new_user)
+    if not recaptcha_token or not verify_recaptcha(recaptcha_token):
+        flash('Verifikasi CAPTCHA gagal.', 'danger')
         return redirect(url_for('check_diabetes_page'))
 
-    return render_template('register.html', site_key=site_key)
+    existing_user = db.session.execute(db.select(User).filter_by(username=username)).scalar_one_or_none()
+    if existing_user:
+        flash('Username sudah digunakan. Pilih yang lain.', 'warning')
+        return redirect(url_for('check_diabetes_page'))
+
+    hashed_password = generate_password_hash(password)
+    new_user = User(username=username, password_hash=hashed_password) 
+
+    db.session.add(new_user)
+    db.session.commit()
+
+    login_user(new_user)
+    flash('Registrasi berhasil! Akun Anda telah dibuat.', 'success')
+    return redirect(url_for('check_diabetes_page'))
 
 @app.route('/logout')
 @login_required
 def logout():
     logout_user()
+    flash('Anda telah logout.', 'info')
     return redirect(url_for('education'))
-
 
 
 # --- Route Aplikasi Utama ---
@@ -178,36 +236,28 @@ def education():
     return render_template('education.html', current_user=current_user)
 
 @app.route('/check')
-@login_required 
 def check_diabetes_page():
-    # index.html berisi form prediksi
-    return render_template('index.html', current_user=current_user) 
+    return render_template('index.html', current_user=current_user, site_key=app.config['RECAPTCHA_SITE_KEY']) 
 
 @app.route('/history')
 @login_required 
 def prediction_history_page():
-    # 1. Ambil data dari database (urutan terbaru untuk Tabel)
     history_records = db.session.execute(
         db.select(PredictionHistory)
         .filter_by(user_id=current_user.id)
         .order_by(PredictionHistory.prediction_date.desc())
     ).scalars().all()
 
-    # 2. Siapkan data untuk Grafik (urutan terlama -> terbaru agar grafik bergerak ke kanan)
-    # Kita balik urutannya menggunakan slicing [::-1]
     records_for_chart = history_records[::-1]
 
-    # Ekstrak data yang ingin ditampilkan (Tanggal, Probabilitas, dan Glukosa)
     dates = [rec.prediction_date.strftime('%d-%b-%Y') for rec in records_for_chart]
     probs = [rec.probability for rec in records_for_chart]
     glucose = [rec.glucose for rec in records_for_chart]
 
-    # 3. Kirim data ke template dalam format JSON string
     return render_template(
         'history.html', 
         history=history_records, 
         current_user=current_user,
-        # Menggunakan json.dumps agar list Python berubah jadi Array Javascript
         chart_dates=json.dumps(dates),
         chart_probs=json.dumps(probs),
         chart_glucose=json.dumps(glucose)
@@ -216,7 +266,6 @@ def prediction_history_page():
 @app.route('/predict', methods=['POST'])
 @login_required 
 def predict():
-    # Ambil input dari form
     feature_names = ['Pregnancies', 'Glucose', 'BloodPressure', 'SkinThickness', 'Insulin', 'BMI', 'DiabetesPedigreeFunction', 'Age']
 
     default_context = {
@@ -225,14 +274,28 @@ def predict():
         'probability_raw': 0.0,
         'risk_level': 'Tidak Diketahui',
         'input_data': {name: 'N/A' for name in feature_names},
+        'advice_list': [] # Default kosong
     }
 
     try:
-        # Ambil nilai input
         input_values = {name: float(request.form[name]) for name in feature_names}
+        
+        # --- VALIDASI INPUT ---
+        if any(value < 0 for value in input_values.values()):
+             return render_template('result.html', result_error="Input tidak valid: Nilai tidak boleh negatif.", **default_context)
+        if input_values['Glucose'] > 1000:
+             return render_template('result.html', result_error="Input Glukosa tidak valid (>1000).", **default_context)
+        if input_values['BloodPressure'] > 300:
+             return render_template('result.html', result_error="Input Tensi tidak valid.", **default_context)
+        if input_values['BMI'] > 100:
+             return render_template('result.html', result_error="Input BMI tidak valid.", **default_context)
+        if input_values['Age'] > 130 or input_values['Age'] < 1:
+             return render_template('result.html', result_error="Input Usia tidak valid.", **default_context)
+        if input_values['Insulin'] > 2000:
+             return render_template('result.html', result_error="Input Insulin tidak valid.", **default_context)
+
         inputs = list(input_values.values())
         
-        # Inisialisasi variabel hasil
         prediction = 0
         prediction_proba = 0.0
         risk_level = 'Tidak Diketahui'
@@ -240,24 +303,19 @@ def predict():
         if model and scaler:
             final_input = np.array([inputs])
             scaled_input = scaler.transform(final_input)
-            
-            # Prediksi kelas (0 atau 1)
             prediction = int(model.predict(scaled_input)[0])
-            
-            # Prediksi probabilitas untuk kelas 1 (risiko diabetes)
             prediction_proba = model.predict_proba(scaled_input)[0][1] * 100 
             
-            # Menentukan risk_level
-            if prediction_proba >= 70:
-                risk_level = "Sangat Tinggi"
-            elif prediction_proba >= 50:
-                risk_level = "Tinggi"
-            elif prediction_proba >= 30:
-                risk_level = "Sedang"
-            else:
-                risk_level = "Rendah"
+            if prediction_proba >= 70: risk_level = "Sangat Tinggi"
+            elif prediction_proba >= 50: risk_level = "Tinggi"
+            elif prediction_proba >= 30: risk_level = "Sedang"
+            else: risk_level = "Rendah"
         
-        # --- PENYIMPANAN RIWAYAT BARU (DITAMBAHKAN) ---
+        # --- GENERATE SARAN PERSONAL ---
+        advice_list = generate_health_advice(input_values)
+
+        wib_now = datetime.utcnow() + timedelta(hours=7)
+
         new_history = PredictionHistory(
             user_id=current_user.id,
             pregnancies=input_values['Pregnancies'],
@@ -271,11 +329,10 @@ def predict():
             prediction_class=prediction,
             probability=prediction_proba,
             risk_level=risk_level,
-            prediction_date=datetime.utcnow() 
+            prediction_date=wib_now
         )
         db.session.add(new_history)
         db.session.commit()
-        # --- AKHIR PENYIMPANAN RIWAYAT ---
 
         return render_template(
             'result.html', 
@@ -283,29 +340,26 @@ def predict():
             probability=f"{prediction_proba:.2f}%",  
             probability_raw=prediction_proba, 
             risk_level=risk_level,            
-            input_data=input_values,          
+            input_data=input_values,
+            advice_list=advice_list  # Kirim saran ke template
         )
             
     except ValueError:
-        return render_template('result.html', result_error="Input tidak valid. Pastikan semua kolom diisi dengan angka dan bukan teks. Cek panduan pengisian.", **default_context)
+        return render_template('result.html', result_error="Input tidak valid.", **default_context)
     except Exception as e:
-        return render_template('result.html', result_error=f"Terjadi kesalahan saat memproses data: {e}", **default_context)
+        return render_template('result.html', result_error=f"Terjadi kesalahan: {e}", **default_context)
 
 @app.route('/history/<int:prediction_id>')
 @login_required
 def prediction_detail(prediction_id):
-    # 1. Cari data berdasarkan ID dan pastikan milik user yang sedang login
     record = db.session.execute(
         db.select(PredictionHistory)
         .filter_by(id=prediction_id, user_id=current_user.id)
     ).scalar_one_or_none()
 
-    # 2. Jika tidak ketemu, tampilkan error 404
     if record is None:
         abort(404)
 
-    # 3. Format ulang data agar sesuai dengan yang diharapkan oleh result.html
-    # Kita harus memetakan nama kolom database (kecil) ke nama tampilan (Kapital)
     input_data = {
         'Pregnancies': record.pregnancies,
         'Glucose': record.glucose,
@@ -316,27 +370,28 @@ def prediction_detail(prediction_id):
         'DiabetesPedigreeFunction': record.dpf,
         'Age': record.age
     }
+    
+    # Generate saran untuk data historis juga
+    advice_list = generate_health_advice(input_data)
 
-    # 4. Render halaman hasil (result.html) dengan data dari database
     return render_template(
         'result.html',
         prediction=record.prediction_class,
         probability=f"{record.probability:.2f}%",
         probability_raw=record.probability,
         risk_level=record.risk_level,
-        input_data=input_data
+        input_data=input_data,
+        advice_list=advice_list # Kirim saran ke template
     )
     
 @app.route('/history/delete/<int:prediction_id>', methods=['POST'])
 @login_required
 def delete_history(prediction_id):
-    # 1. Cari data berdasarkan ID dan pastikan milik user yang sedang login
     record = db.session.execute(
         db.select(PredictionHistory)
         .filter_by(id=prediction_id, user_id=current_user.id)
     ).scalar_one_or_none()
 
-    # 2. Jika data ditemukan, hapus dari database
     if record:
         try:
             db.session.delete(record)
@@ -344,16 +399,13 @@ def delete_history(prediction_id):
             flash('Data riwayat berhasil dihapus.', 'success')
         except Exception as e:
             db.session.rollback()
-            flash(f'Terjadi kesalahan saat menghapus data: {e}', 'danger')
+            flash(f'Gagal menghapus data: {e}', 'danger')
     else:
-        flash('Data tidak ditemukan atau Anda tidak memiliki akses.', 'danger')
+        flash('Data tidak ditemukan.', 'danger')
 
-    # 3. Kembali ke halaman riwayat
     return redirect(url_for('prediction_history_page'))
 
 if __name__ == "__main__":
     with app.app_context():
-        print("Mencoba membuat tabel di database MySQL...")
-        db.create_all() # Akan membuat tabel User dan PredictionHistory
-        print("Inisialisasi database selesai.")
+        db.create_all()
     app.run(debug=True)

@@ -31,7 +31,7 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'check_diabetes_page' 
 login_manager.login_message = "Silakan login terlebih dahulu untuk mengakses halaman ini."
-
+login_manager.login_message_category = "warning"
 # Load model & scaler
 try:
     model = pickle.load(open('model/diabetes_model.pkl', 'rb'))
@@ -233,7 +233,7 @@ def logout():
 @app.route('/')
 @app.route('/education')
 def education(): 
-    return render_template('education.html', current_user=current_user)
+    return render_template('education.html', current_user=current_user, site_key=app.config['RECAPTCHA_SITE_KEY'])
 
 @app.route('/check')
 def check_diabetes_page():

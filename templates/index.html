@@ -17,6 +17,7 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
     />
     <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <style>
       body {
@@ -30,9 +31,9 @@
         padding: 1rem 0;
         background-color: #ffffff !important;
         transition: all 0.3s ease;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.05); /* Bayangan halus */
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05); /* Bayangan halus */
       }
-      
+
       .navbar-brand {
         font-weight: 700;
         color: #0d6efd !important;
@@ -47,7 +48,8 @@
         transition: color 0.2s;
       }
 
-      .nav-link:hover, .nav-link.active {
+      .nav-link:hover,
+      .nav-link.active {
         color: #0d6efd !important;
       }
 
@@ -83,16 +85,22 @@
       }
 
       @keyframes float {
-        0% { transform: translateY(0px); }
-        50% { transform: translateY(-20px); }
-        100% { transform: translateY(0px); }
+        0% {
+          transform: translateY(0px);
+        }
+        50% {
+          transform: translateY(-20px);
+        }
+        100% {
+          transform: translateY(0px);
+        }
       }
 
       /* --- FORM SECTION --- */
       .card-form {
         border: none;
         border-radius: 20px;
-        box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
         background: white;
         z-index: 10;
         position: relative;
@@ -102,7 +110,7 @@
         margin-bottom: 3rem;
         text-align: center;
       }
-      
+
       .section-header h2 {
         font-weight: 700;
         color: #2c3e50;
@@ -119,7 +127,7 @@
       .modal-content {
         border: none;
         border-radius: 20px;
-        box-shadow: 0 25px 50px rgba(0,0,0,0.25);
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
       }
 
       .form-control {
@@ -127,7 +135,7 @@
         padding: 0.75rem 1rem;
         border: 1px solid #dee2e6;
       }
-      
+
       .form-control:focus {
         box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.15);
         border-color: #86b7fe;
@@ -163,33 +171,73 @@
         <div class="collapse navbar-collapse" id="navbarNav">
           <ul class="navbar-nav ms-auto align-items-center">
             <li class="nav-item">
-              <a class="nav-link" href="{{ url_for('education') }}">Pusat Edukasi</a>
+              <a class="nav-link" href="{{ url_for('education') }}"
+                >Pusat Edukasi</a
+              >
             </li>
             <li class="nav-item">
-              <a class="nav-link active fw-bold" href="{{ url_for('check_diabetes_page') }}">Cek Diabetes</a>
+              <a
+                class="nav-link active fw-bold"
+                href="{{ url_for('check_diabetes_page') }}"
+                >Cek Diabetes</a
+              >
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="{{ url_for('prediction_history_page') }}">Riwayat</a>
+              {% if current_user.is_authenticated %}
+              <a
+                class="nav-link"
+                href="{{ url_for('prediction_history_page') }}"
+                >Riwayat</a
+              >
+              {% else %}
+              <a
+                class="nav-link"
+                href="#"
+                onclick="tampilkanNotifikasiLogin('Riwayat')"
+                >Riwayat</a
+              >
+              {% endif %}
             </li>
             <li class="nav-item d-none d-lg-block mx-3 text-muted">|</li>
-            
+
             {% if current_user.is_authenticated %}
             <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle text-dark fw-bold" href="#" data-bs-toggle="dropdown">
-                   Hai, {{ current_user.username }}
-                </a>
-                <ul class="dropdown-menu dropdown-menu-end border-0 shadow rounded-4 mt-2">
-                    <li><a class="dropdown-item text-danger py-2" href="{{ url_for('logout') }}"><i class="fa-solid fa-power-off me-2"></i>Logout</a></li>
-                </ul>
+              <a
+                class="nav-link dropdown-toggle text-dark fw-bold"
+                href="#"
+                data-bs-toggle="dropdown"
+              >
+                Hai, {{ current_user.username }}
+              </a>
+              <ul
+                class="dropdown-menu dropdown-menu-end border-0 shadow rounded-4 mt-2"
+              >
+                <li>
+                  <a
+                    class="dropdown-item text-danger py-2"
+                    href="{{ url_for('logout') }}"
+                  >
+                    <i class="fa-solid fa-right-from-bracket me-2"></i>Logout
+                  </a>
+                </li>
+              </ul>
             </li>
             {% else %}
             <li class="nav-item">
-              <button class="btn btn-outline-primary btn-sm rounded-pill px-4 fw-bold me-2" data-bs-toggle="modal" data-bs-target="#loginModal">
+              <button
+                class="btn btn-outline-primary btn-sm rounded-pill px-4 fw-bold me-2"
+                data-bs-toggle="modal"
+                data-bs-target="#loginModal"
+              >
                 Masuk
               </button>
             </li>
             <li class="nav-item">
-              <button class="btn btn-primary btn-sm rounded-pill px-4 fw-bold shadow-sm" data-bs-toggle="modal" data-bs-target="#registerModal">
+              <button
+                class="btn btn-primary btn-sm rounded-pill px-4 fw-bold shadow-sm"
+                data-bs-toggle="modal"
+                data-bs-target="#registerModal"
+              >
                 Daftar
               </button>
             </li>
@@ -203,168 +251,336 @@
       <div class="container">
         <div class="row align-items-center">
           <div class="col-lg-6 order-2 order-lg-1">
-            <span class="badge bg-primary bg-opacity-10 text-primary mb-3 px-3 py-2 rounded-pill fw-bold">
-                <i class="fa-solid fa-wand-magic-sparkles me-2"></i>AI Powered Prediction
+            <span
+              class="badge bg-primary bg-opacity-10 text-primary mb-3 px-3 py-2 rounded-pill fw-bold"
+            >
+              <i class="fa-solid fa-wand-magic-sparkles me-2"></i>AI Powered
+              Prediction
             </span>
             <h1 class="hero-title">
-              Ketahui Risiko Diabetes <span class="text-primary">Sejak Dini.</span>
+              Ketahui Risiko Diabetes
+              <span class="text-primary">Sejak Dini.</span>
             </h1>
             <p class="hero-text">
-              Jangan menunggu gejala muncul. Gunakan teknologi <i>Machine Learning</i> kami untuk menganalisis parameter kesehatan Anda secara akurat, cepat, dan gratis.
+              Jangan menunggu gejala muncul. Gunakan teknologi
+              <i>Machine Learning</i> kami untuk menganalisis parameter
+              kesehatan Anda secara akurat, cepat, dan gratis.
             </p>
             <div class="d-flex gap-3">
-                <a href="#formPrediksi" class="btn btn-primary btn-lg rounded-pill px-5 py-3 shadow fw-bold">
-                    <i class="fa-solid fa-stethoscope me-2"></i> Mulai Cek
-                </a>
-                <a href="{{ url_for('education') }}" class="btn btn-outline-secondary btn-lg rounded-pill px-4 py-3 fw-bold">
-                    Pelajari Dulu
-                </a>
+              <a
+                href="#formPrediksi"
+                class="btn btn-primary btn-lg rounded-pill px-5 py-3 shadow fw-bold"
+              >
+                <i class="fa-solid fa-stethoscope me-2"></i> Mulai Cek
+              </a>
+              <a
+                href="{{ url_for('education') }}"
+                class="btn btn-outline-secondary btn-lg rounded-pill px-4 py-3 fw-bold"
+              >
+                Pelajari Dulu
+              </a>
             </div>
           </div>
           <div class="col-lg-6 order-1 order-lg-2 text-center mb-5 mb-lg-0">
-            <img src="{{ url_for('static', filename='assets/ilustrasi.png') }}" alt="Medical Illustration" class="hero-img">
+            <img
+              src="{{ url_for('static', filename='assets/ilustrasi.png') }}"
+              alt="Medical Illustration"
+              class="hero-img"
+            />
           </div>
         </div>
       </div>
     </section>
 
     <div class="container pb-5" id="formPrediksi">
-      
-      {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-          {% for category, message in messages %}
-            <div class="alert alert-{{ category }} alert-dismissible fade show shadow-sm rounded-3 mb-4" role="alert">
-              {{ message }}
-              <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-          {% endfor %}
-        {% endif %}
-      {% endwith %}
+      {% with messages = get_flashed_messages(with_categories=true) %} {% if
+      messages %} {% for category, message in messages %}
+      <div
+        class="alert alert-{{ category }} alert-dismissible fade show shadow-sm rounded-3 mb-4"
+        role="alert"
+      >
+        {{ message }}
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="alert"
+        ></button>
+      </div>
+      {% endfor %} {% endif %} {% endwith %}
 
       <div class="section-header">
         <h2>Lengkapi Data Medis</h2>
-        <p class="text-muted">Data Anda diproses secara privat dan hanya digunakan untuk prediksi.</p>
+        <p class="text-muted">
+          Data Anda diproses secara privat dan hanya digunakan untuk prediksi.
+        </p>
       </div>
 
       <div class="row justify-content-center">
-        
         <div class="col-lg-4 mb-4">
-            <div class="card border-0 shadow-sm rounded-4 mb-4 text-center overflow-hidden bg-primary bg-opacity-10">
-                <div class="card-body p-4">
-                    <h5 class="fw-bold text-primary mb-3">Hidup Sehat, Bahagia!</h5>
-                    <img src="{{ url_for('static', filename='assets/sehat.png') }}" class="img-fluid mb-3" style="max-height: 180px;" alt="Healthy Lifestyle">
-                    <p class="small text-muted mb-0">"Kesehatan bukan segalanya, tapi tanpa kesehatan, segalanya bukan apa-apa."</p>
-                </div>
+          <div
+            class="card border-0 shadow-sm rounded-4 mb-4 text-center overflow-hidden bg-primary bg-opacity-10"
+          >
+            <div class="card-body p-4">
+              <h5 class="fw-bold text-primary mb-3">Hidup Sehat, Bahagia!</h5>
+              <img
+                src="{{ url_for('static', filename='assets/sehat.png') }}"
+                class="img-fluid mb-3"
+                style="max-height: 180px"
+                alt="Healthy Lifestyle"
+              />
+              <p class="small text-muted mb-0">
+                "Kesehatan bukan segalanya, tapi tanpa kesehatan, segalanya
+                bukan apa-apa."
+              </p>
             </div>
+          </div>
 
-            <div class="accordion shadow-sm rounded-4 overflow-hidden" id="panduanPengisian">
-                <div class="accordion-item border-0">
-                  <h2 class="accordion-header">
-                    <button class="accordion-button bg-white text-dark fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne">
-                        <i class="fa-solid fa-circle-question me-2 text-warning"></i> Panduan Pengisian
-                    </button>
-                  </h2>
-                  <div id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="#panduanPengisian">
-                    <div class="accordion-body bg-white small text-secondary">
-                        <ul class="ps-3 mb-0">
-                            <li class="mb-2"><strong>Kehamilan:</strong> Khusus wanita, pria isi 0.</li>
-                            <li class="mb-2"><strong>Glukosa:</strong> Gula darah puasa (mg/dL).</li>
-                            <li class="mb-2"><strong>Tekanan Darah:</strong> Diastolik/bawah (mm Hg).</li>
-                            <li class="mb-2"><strong>BMI:</strong> Gunakan kalkulator di form.</li>
-                            <li><strong>DPF:</strong> Riwayat genetik (0.1 - 2.5).</li>
-                        </ul>
-                    </div>
-                  </div>
+          <div
+            class="accordion shadow-sm rounded-4 overflow-hidden"
+            id="panduanPengisian"
+          >
+            <div class="accordion-item border-0">
+              <h2 class="accordion-header">
+                <button
+                  class="accordion-button bg-white text-dark fw-bold"
+                  type="button"
+                  data-bs-toggle="collapse"
+                  data-bs-target="#collapseOne"
+                >
+                  <i class="fa-solid fa-circle-question me-2 text-warning"></i>
+                  Panduan Pengisian
+                </button>
+              </h2>
+              <div
+                id="collapseOne"
+                class="accordion-collapse collapse show"
+                data-bs-parent="#panduanPengisian"
+              >
+                <div class="accordion-body bg-white small text-secondary">
+                  <ul class="ps-3 mb-0">
+                    <li class="mb-2">
+                      <strong>Kehamilan:</strong> Khusus wanita, pria isi 0.
+                    </li>
+                    <li class="mb-2">
+                      <strong>Glukosa:</strong> Gula darah puasa (mg/dL).
+                    </li>
+                    <li class="mb-2">
+                      <strong>Tekanan Darah:</strong> Diastolik/bawah (mm Hg).
+                    </li>
+                    <li class="mb-2">
+                      <strong>BMI:</strong> Gunakan kalkulator di form.
+                    </li>
+                    <li><strong>DPF:</strong> Riwayat genetik (0.1 - 2.5).</li>
+                  </ul>
                 </div>
+              </div>
             </div>
+          </div>
         </div>
 
         <div class="col-lg-8">
           <div class="card p-4 p-md-5 card-form">
             <form action="{{ url_for('predict') }}" method="post">
-              
               <div class="bg-light p-4 rounded-4 mb-4 border border-dashed">
-                  <div class="d-flex align-items-center mb-3">
-                      <i class="fa-solid fa-calculator text-primary me-2"></i>
-                      <h6 class="mb-0 fw-bold text-dark">Kalkulator BMI</h6>
+                <div class="d-flex align-items-center mb-3">
+                  <i class="fa-solid fa-calculator text-primary me-2"></i>
+                  <h6 class="mb-0 fw-bold text-dark">Kalkulator BMI</h6>
+                </div>
+                <div class="row g-2">
+                  <div class="col-md-5">
+                    <input
+                      type="number"
+                      step="0.1"
+                      id="weight"
+                      class="form-control"
+                      placeholder="Berat (kg)"
+                    />
                   </div>
-                  <div class="row g-2">
-                      <div class="col-md-5">
-                          <input type="number" step="0.1" id="weight" class="form-control" placeholder="Berat (kg)">
-                      </div>
-                      <div class="col-md-5">
-                          <input type="number" step="0.01" id="height" class="form-control" placeholder="Tinggi (m)">
-                      </div>
-                      <div class="col-md-2 d-grid">
-                          <button type="button" class="btn btn-dark text-white btn-sm" id="btnHitungBMI">Hitung</button>
-                      </div>
+                  <div class="col-md-5">
+                    <input
+                      type="number"
+                      step="0.01"
+                      id="height"
+                      class="form-control"
+                      placeholder="Tinggi (m)"
+                    />
                   </div>
-                  <div id="bmiResult" class="mt-2 text-center small fw-bold"></div>
+                  <div class="col-md-2 d-grid">
+                    <button
+                      type="button"
+                      class="btn btn-dark text-white btn-sm"
+                      id="btnHitungBMI"
+                    >
+                      Hitung
+                    </button>
+                  </div>
+                </div>
+                <div
+                  id="bmiResult"
+                  class="mt-2 text-center small fw-bold"
+                ></div>
               </div>
 
               <div class="row g-4">
                 <div class="col-md-6">
-                  <label class="form-label small fw-bold text-muted">1. Jumlah Kehamilan</label>
+                  <label class="form-label small fw-bold text-muted"
+                    >1. Jumlah Kehamilan</label
+                  >
                   <div class="input-group">
-                      <span class="input-group-text"><i class="fa-solid fa-baby"></i></span>
-                      <input type="number" name="Pregnancies" class="form-control" placeholder="0" required>
+                    <span class="input-group-text"
+                      ><i class="fa-solid fa-baby"></i
+                    ></span>
+                    <input
+                      type="number"
+                      name="Pregnancies"
+                      class="form-control"
+                      placeholder="0"
+                      required
+                    />
                   </div>
                 </div>
                 <div class="col-md-6">
-                  <label class="form-label small fw-bold text-muted">2. Glukosa (mg/dL)</label>
+                  <label class="form-label small fw-bold text-muted"
+                    >2. Glukosa (mg/dL)</label
+                  >
                   <div class="input-group">
-                      <span class="input-group-text"><i class="fa-solid fa-droplet text-danger"></i></span>
-                      <input type="number" step="0.01" name="Glucose" class="form-control" required>
+                    <span class="input-group-text"
+                      ><i class="fa-solid fa-droplet text-danger"></i
+                    ></span>
+                    <input
+                      type="number"
+                      step="0.01"
+                      name="Glucose"
+                      class="form-control"
+                      required
+                    />
                   </div>
                 </div>
                 <div class="col-md-6">
-                  <label class="form-label small fw-bold text-muted">3. Tekanan Darah (mm Hg)</label>
+                  <label class="form-label small fw-bold text-muted"
+                    >3. Tekanan Darah (mm Hg)</label
+                  >
                   <div class="input-group">
-                      <span class="input-group-text"><i class="fa-solid fa-heart-pulse text-danger"></i></span>
-                      <input type="number" step="0.01" name="BloodPressure" class="form-control" required>
+                    <span class="input-group-text"
+                      ><i class="fa-solid fa-heart-pulse text-danger"></i
+                    ></span>
+                    <input
+                      type="number"
+                      step="0.01"
+                      name="BloodPressure"
+                      class="form-control"
+                      required
+                    />
                   </div>
                 </div>
                 <div class="col-md-6">
-                  <label class="form-label small fw-bold text-muted">4. Tebal Kulit (mm)</label>
+                  <label class="form-label small fw-bold text-muted"
+                    >4. Tebal Kulit (mm)</label
+                  >
                   <div class="input-group">
-                      <span class="input-group-text"><i class="fa-solid fa-ruler-vertical"></i></span>
-                      <input type="number" step="0.01" name="SkinThickness" class="form-control" required>
+                    <span class="input-group-text"
+                      ><i class="fa-solid fa-ruler-vertical"></i
+                    ></span>
+                    <input
+                      type="number"
+                      step="0.01"
+                      name="SkinThickness"
+                      class="form-control"
+                      required
+                    />
                   </div>
                 </div>
                 <div class="col-md-6">
-                  <label class="form-label small fw-bold text-muted">5. Insulin (mu U/ml)</label>
+                  <label class="form-label small fw-bold text-muted"
+                    >5. Insulin (mu U/ml)</label
+                  >
                   <div class="input-group">
-                      <span class="input-group-text"><i class="fa-solid fa-syringe"></i></span>
-                      <input type="number" step="0.01" name="Insulin" class="form-control" required>
+                    <span class="input-group-text"
+                      ><i class="fa-solid fa-syringe"></i
+                    ></span>
+                    <input
+                      type="number"
+                      step="0.01"
+                      name="Insulin"
+                      class="form-control"
+                      required
+                    />
                   </div>
                 </div>
                 <div class="col-md-6">
-                  <label class="form-label small fw-bold text-muted">6. BMI (Body Mass Index)</label>
+                  <label class="form-label small fw-bold text-muted"
+                    >6. BMI (Body Mass Index)</label
+                  >
                   <div class="input-group">
-                      <span class="input-group-text bg-light"><i class="fa-solid fa-weight-scale"></i></span>
-                      <input type="number" step="0.01" name="BMI" id="bmi" class="form-control bg-light" readonly required>
+                    <span class="input-group-text bg-light"
+                      ><i class="fa-solid fa-weight-scale"></i
+                    ></span>
+                    <input
+                      type="number"
+                      step="0.01"
+                      name="BMI"
+                      id="bmi"
+                      class="form-control bg-light"
+                      readonly
+                      required
+                    />
                   </div>
                 </div>
                 <div class="col-md-6">
-                  <label class="form-label small fw-bold text-muted">7. Diabetes Pedigree</label>
+                  <label class="form-label small fw-bold text-muted"
+                    >7. Diabetes Pedigree</label
+                  >
                   <div class="input-group">
-                      <span class="input-group-text"><i class="fa-solid fa-dna text-success"></i></span>
-                      <input type="number" step="0.001" name="DiabetesPedigreeFunction" class="form-control" placeholder="0.5" required>
+                    <span class="input-group-text"
+                      ><i class="fa-solid fa-dna text-success"></i
+                    ></span>
+                    <input
+                      type="number"
+                      step="0.001"
+                      name="DiabetesPedigreeFunction"
+                      class="form-control"
+                      placeholder="0.5"
+                      required
+                    />
                   </div>
                 </div>
                 <div class="col-md-6">
-                  <label class="form-label small fw-bold text-muted">8. Usia (Tahun)</label>
+                  <label class="form-label small fw-bold text-muted"
+                    >8. Usia (Tahun)</label
+                  >
                   <div class="input-group">
-                      <span class="input-group-text"><i class="fa-solid fa-calendar"></i></span>
-                      <input type="number" name="Age" class="form-control" required>
+                    <span class="input-group-text"
+                      ><i class="fa-solid fa-calendar"></i
+                    ></span>
+                    <input
+                      type="number"
+                      name="Age"
+                      class="form-control"
+                      required
+                    />
                   </div>
                 </div>
               </div>
 
               <div class="d-grid mt-5">
-                <button type="submit" class="btn btn-primary btn-lg rounded-pill py-3 shadow fw-bold hover-scale">
-                  <i class="fa-solid fa-magnifying-glass-chart me-2"></i> Analisis Risiko Sekarang
+                {% if current_user.is_authenticated %}
+                <button
+                  type="submit"
+                  class="btn btn-primary btn-lg rounded-pill py-3 shadow fw-bold hover-scale"
+                >
+                  <i class="fa-solid fa-magnifying-glass-chart me-2"></i>
+                  Analisis Risiko Sekarang
                 </button>
+                {% else %}
+                <button
+                  type="button"
+                  onclick="tampilkanNotifikasiLogin('Prediksi')"
+                  class="btn btn-primary btn-lg rounded-pill py-3 shadow fw-bold hover-scale"
+                >
+                  <i class="fa-solid fa-magnifying-glass-chart me-2"></i>
+                  Analisis Risiko Sekarang
+                </button>
+                {% endif %}
               </div>
             </form>
           </div>
@@ -374,43 +590,84 @@
 
     <footer class="bg-white border-top py-4 text-center mt-auto">
       <div class="container">
-        <p class="text-muted mb-0 small">© 2025 Sistem Prediksi Diabetes | Galih Yoga Kurniawan</p>
+        <p class="text-muted mb-0 small">
+          © 2025 Sistem Prediksi Diabetes | DiabCheck
+        </p>
       </div>
     </footer>
 
     <div class="modal fade" id="loginModal" tabindex="-1" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered" style="max-width: 420px;">
+      <div class="modal-dialog modal-dialog-centered" style="max-width: 420px">
         <div class="modal-content">
           <div class="modal-header border-0 pb-0">
-             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
           </div>
           <div class="modal-body px-4 pb-4 pt-0 text-center">
             <div class="mb-3 text-primary">
-                <i class="fa-solid fa-circle-user fa-3x"></i>
+              <i class="fa-solid fa-circle-user fa-3x"></i>
             </div>
             <h4 class="fw-bold mb-1">Selamat Datang Kembali</h4>
-            <p class="text-muted small mb-4">Masuk untuk mengakses riwayat prediksi</p>
-            
-            <form method="POST" action="{{ url_for('login') }}">
-                <div class="form-floating mb-3 text-start">
-                  <input type="text" name="username" class="form-control" id="loginUser" placeholder="Username" required>
-                  <label for="loginUser">Username</label>
-                </div>
-                <div class="form-floating mb-3 text-start">
-                  <input type="password" name="password" class="form-control" id="loginPass" placeholder="Password" required>
-                  <label for="loginPass">Password</label>
-                </div>
-                
-                <div class="mb-3 d-flex justify-content-center" style="transform: scale(0.9);">
-                    <div class="g-recaptcha" data-sitekey="{{ site_key }}"></div>
-                </div>
+            <p class="text-muted small mb-4">
+              Masuk untuk mengakses riwayat prediksi
+            </p>
 
-                <div class="d-grid mb-3">
-                  <button type="submit" class="btn btn-primary btn-lg rounded-3 fw-bold">Masuk</button>
-                </div>
+            <form method="POST" action="{{ url_for('login') }}">
+              <div class="form-floating mb-3 text-start">
+                <input
+                  type="text"
+                  name="username"
+                  class="form-control"
+                  id="loginUser"
+                  placeholder="Username"
+                  required
+                />
+                <label for="loginUser">Username</label>
+              </div>
+              <div class="form-floating mb-3 text-start">
+                <input
+                  type="password"
+                  name="password"
+                  class="form-control"
+                  id="loginPass"
+                  placeholder="Password"
+                  required
+                />
+                <label for="loginPass">Password</label>
+              </div>
+
+              <div
+                class="mb-3 d-flex justify-content-center"
+                style="transform: scale(0.9)"
+              >
+                <div class="g-recaptcha" data-sitekey="{{ site_key }}"></div>
+              </div>
+
+              <div class="d-grid mb-3">
+                <button
+                  type="submit"
+                  class="btn btn-primary btn-lg rounded-3 fw-bold"
+                >
+                  Masuk
+                </button>
+              </div>
             </form>
             <div class="text-center pt-2 border-top">
-                <small class="text-muted">Belum punya akun? <a href="#" class="text-decoration-none fw-bold" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#registerModal">Daftar Sekarang</a></small>
+              <small class="text-muted"
+                >Belum punya akun?
+                <a
+                  href="#"
+                  class="text-decoration-none fw-bold"
+                  data-bs-dismiss="modal"
+                  data-bs-toggle="modal"
+                  data-bs-target="#registerModal"
+                  >Daftar Sekarang</a
+                ></small
+              >
             </div>
           </div>
         </div>
@@ -418,38 +675,77 @@
     </div>
 
     <div class="modal fade" id="registerModal" tabindex="-1" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered" style="max-width: 420px;">
+      <div class="modal-dialog modal-dialog-centered" style="max-width: 420px">
         <div class="modal-content">
           <div class="modal-header border-0 pb-0">
-             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
           </div>
           <div class="modal-body px-4 pb-4 pt-0 text-center">
             <div class="mb-3 text-success">
-                <i class="fa-solid fa-user-plus fa-3x"></i>
+              <i class="fa-solid fa-user-plus fa-3x"></i>
             </div>
             <h4 class="fw-bold mb-1">Buat Akun Baru</h4>
-            <p class="text-muted small mb-4">Daftar gratis dalam hitungan detik</p>
-            
+            <p class="text-muted small mb-4">
+              Daftar gratis dalam hitungan detik
+            </p>
+
             <form method="POST" action="{{ url_for('register') }}">
-                <div class="form-floating mb-3 text-start">
-                  <input type="text" name="username" class="form-control" id="regUser" placeholder="Username Baru" required>
-                  <label for="regUser">Username Baru</label>
-                </div>
-                <div class="form-floating mb-3 text-start">
-                  <input type="password" name="password" class="form-control" id="regPass" placeholder="Password" required>
-                  <label for="regPass">Password</label>
-                </div>
+              <div class="form-floating mb-3 text-start">
+                <input
+                  type="text"
+                  name="username"
+                  class="form-control"
+                  id="regUser"
+                  placeholder="Username Baru"
+                  required
+                />
+                <label for="regUser">Username Baru</label>
+              </div>
+              <div class="form-floating mb-3 text-start">
+                <input
+                  type="password"
+                  name="password"
+                  class="form-control"
+                  id="regPass"
+                  placeholder="Password"
+                  required
+                />
+                <label for="regPass">Password</label>
+              </div>
 
-                <div class="mb-3 d-flex justify-content-center" style="transform: scale(0.9);">
-                   <div class="g-recaptcha" data-sitekey="{{ site_key }}"></div>
-                </div>
+              <div
+                class="mb-3 d-flex justify-content-center"
+                style="transform: scale(0.9)"
+              >
+                <div class="g-recaptcha" data-sitekey="{{ site_key }}"></div>
+              </div>
 
-                <div class="d-grid mb-3">
-                  <button type="submit" class="btn btn-success btn-lg rounded-3 fw-bold">Daftar Akun</button>
-                </div>
+              <div class="d-grid mb-3">
+                <button
+                  type="submit"
+                  class="btn btn-success btn-lg rounded-3 fw-bold"
+                >
+                  Daftar Akun
+                </button>
+              </div>
             </form>
             <div class="text-center pt-2 border-top">
-                <small class="text-muted">Sudah punya akun? <a href="#" class="text-decoration-none fw-bold text-success" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#loginModal">Login</a></small>
+              <small class="text-muted"
+                >Sudah punya akun?
+                <a
+                  href="#"
+                  class="text-decoration-none fw-bold text-success"
+                  data-bs-dismiss="modal"
+                  data-bs-toggle="modal"
+                  data-bs-target="#loginModal"
+                  >Login</a
+                ></small
+              >
             </div>
           </div>
         </div>
@@ -458,6 +754,30 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
+    <script>
+      // Fungsi Notifikasi "Harus Login"
+      function tampilkanNotifikasiLogin(fitur) {
+        Swal.fire({
+          title: "Akses Dibatasi",
+          text: `Maaf, Anda harus login terlebih dahulu untuk mengakses ${fitur}.`,
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#0d6efd", // Warna Biru
+          cancelButtonColor: "#d33", // Warna Merah
+          confirmButtonText: "Login Sekarang",
+          cancelButtonText: "Nanti Saja",
+        }).then((result) => {
+          if (result.isConfirmed) {
+            // Jika user klik "Login Sekarang", buka Modal Login otomatis
+            var myModal = new bootstrap.Modal(
+              document.getElementById("loginModal")
+            );
+            myModal.show();
+          }
+        });
+      }
+    </script>
+    
     <script>
       document.addEventListener("DOMContentLoaded", function () {
         const weightInput = document.getElementById("weight");
@@ -471,7 +791,8 @@
           const height = parseFloat(heightInput.value);
 
           if (isNaN(weight) || isNaN(height) || height <= 0 || weight <= 0) {
-            bmiResultDiv.innerHTML = "<span class='text-danger'>*Masukkan angka yang valid.</span>";
+            bmiResultDiv.innerHTML =
+              "<span class='text-danger'>*Masukkan angka yang valid.</span>";
             return;
           }
 
@@ -481,15 +802,24 @@
 
           let status = "";
           let colorClass = "";
-          if (bmi < 18.5) { status = "Kurus"; colorClass = "text-warning"; }
-          else if (bmi <= 24.9) { status = "Normal"; colorClass = "text-success"; }
-          else if (bmi <= 29.9) { status = "Gemuk"; colorClass = "text-warning"; }
-          else { status = "Obesitas"; colorClass = "text-danger"; }
+          if (bmi < 18.5) {
+            status = "Kurus";
+            colorClass = "text-warning";
+          } else if (bmi <= 24.9) {
+            status = "Normal";
+            colorClass = "text-success";
+          } else if (bmi <= 29.9) {
+            status = "Gemuk";
+            colorClass = "text-warning";
+          } else {
+            status = "Obesitas";
+            colorClass = "text-danger";
+          }
 
           bmiResultDiv.innerHTML = `Hasil BMI: <span class="h5 ${colorClass}">${roundedBmi}</span> (${status})`;
         }
 
-        if(btnHitung) btnHitung.addEventListener("click", calculateBMI);
+        if (btnHitung) btnHitung.addEventListener("click", calculateBMI);
       });
     </script>
   </body>

@@ -32,7 +32,7 @@
         background-color: #ffffff !important;
         transition: all 0.3s ease-in-out;
       }
-      
+
       .navbar-brand {
         font-weight: 700;
         color: #0d6efd !important;
@@ -46,8 +46,6 @@
         transition: color 0.2s;
       }
 
-      
-
       /* --- HERO SECTION KHUSUS EDUKASI --- */
       .hero-education {
         background: linear-gradient(135deg, #20c997 0%, #0d6efd 100%);
@@ -58,7 +56,7 @@
         position: relative;
         overflow: hidden;
       }
-      
+
       .hero-education::after {
         content: "\f02d"; /* Ikon Buku FontAwesome */
         font-family: "Font Awesome 6 Free";
@@ -82,7 +80,7 @@
 
       .info-card:hover {
         transform: translateY(-5px);
-        box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
       }
 
       /* --- MODIFIKASI TOMBOL NAVIGASI (PILLS) --- */
@@ -94,7 +92,7 @@
         background-color: white;
         border: 1px solid #dee2e6;
         /* Border bawah transparan (disiapkan untuk hover) */
-        border-bottom: 4px solid transparent; 
+        border-bottom: 4px solid transparent;
         margin-right: 15px;
         margin-bottom: 10px;
         transition: all 0.3s ease; /* Transisi halus */
@@ -106,7 +104,7 @@
         color: #0d6efd; /* Teks jadi biru */
         border-bottom-color: #0d6efd; /* Garis bawah berubah biru */
         transform: translateY(-5px); /* Gerak naik */
-        box-shadow: 0 10px 20px rgba(0,0,0,0.08); /* Bayangan halus */
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08); /* Bayangan halus */
       }
 
       /* State Aktif */
@@ -117,7 +115,7 @@
         transform: scale(1.05);
         box-shadow: 0 5px 15px rgba(13, 110, 253, 0.3);
       }
-      
+
       /* Styling Gambar Ilustrasi */
       .img-edukasi {
         transition: transform 0.3s ease;
@@ -133,7 +131,7 @@
         <a class="navbar-brand" href="{{ url_for('education') }}">
           <i class="fa-solid fa-heart-pulse me-2 text-danger"></i>DiabCheck
         </a>
-        
+
         <button
           class="navbar-toggler border-0"
           type="button"
@@ -142,35 +140,70 @@
         >
           <span class="navbar-toggler-icon"></span>
         </button>
-        
+
         <div class="collapse navbar-collapse" id="navbarNav">
           <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center">
             <li class="nav-item">
-              <a class="nav-link active fw-bold" href="{{ url_for('education') }}">Pusat Edukasi</a>
+              <a
+                class="nav-link active fw-bold"
+                href="{{ url_for('education') }}"
+                >Pusat Edukasi</a
+              >
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="{{ url_for('check_diabetes_page') }}">Cek Diabetes</a>
+              <a class="nav-link" href="{{ url_for('check_diabetes_page') }}"
+                >Cek Diabetes</a
+              >
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="{{ url_for('prediction_history_page') }}">Riwayat</a>
+              <a
+                class="nav-link"
+                href="{{ url_for('prediction_history_page') }}"
+                >Riwayat</a
+              >
             </li>
-            
+
             <li class="nav-item d-none d-lg-block mx-2 text-muted">|</li>
 
             {% if current_user.is_authenticated %}
             <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle text-dark fw-bold" href="#" role="button" data-bs-toggle="dropdown">
-                   Halo, {{ current_user.username }}
-                </a>
-                <ul class="dropdown-menu dropdown-menu-end shadow border-0">
-                    <li><a class="dropdown-item text-danger" href="{{ url_for('logout') }}"><i class="fa-solid fa-right-from-bracket me-2"></i>Logout</a></li>
-                </ul>
+              <a
+                class="nav-link dropdown-toggle text-dark fw-bold"
+                href="#"
+                role="button"
+                data-bs-toggle="dropdown"
+              >
+                Halo, {{ current_user.username }}
+              </a>
+              <ul class="dropdown-menu dropdown-menu-end shadow border-0">
+                <li>
+                  <a
+                    class="dropdown-item text-danger"
+                    href="{{ url_for('logout') }}"
+                    ><i class="fa-solid fa-right-from-bracket me-2"></i
+                    >Logout</a
+                  >
+                </li>
+              </ul>
             </li>
             {% else %}
-            <li class="nav-item ms-2">
-              <a class="btn btn-outline-primary btn-sm rounded-pill px-4 fw-bold me-2" href="{{ url_for('check_diabetes_page') }}">
-                Login
-              </a>
+            <li class="nav-item">
+              <button
+                class="btn btn-outline-primary btn-sm rounded-pill px-4 fw-bold me-2"
+                data-bs-toggle="modal"
+                data-bs-target="#loginModal"
+              >
+                Masuk
+              </button>
+            </li>
+            <li class="nav-item">
+              <button
+                class="btn btn-primary btn-sm rounded-pill px-4 fw-bold shadow-sm"
+                data-bs-toggle="modal"
+                data-bs-target="#registerModal"
+              >
+                Daftar
+              </button>
             </li>
             {% endif %}
           </ul>
@@ -180,218 +213,478 @@
 
     <div class="hero-education text-center">
       <div class="container">
-        <span class="badge bg-white text-primary rounded-pill mb-3 px-3 py-2 shadow-sm fw-bold">
-            <i class="fa-solid fa-book-open me-2"></i> Knowledge Base
+        <span
+          class="badge bg-white text-primary rounded-pill mb-3 px-3 py-2 shadow-sm fw-bold"
+        >
+          <i class="fa-solid fa-book-open me-2"></i> Knowledge Base
         </span>
         <h1 class="display-5 fw-bold mb-3">Pusat Pengetahuan Diabetes</h1>
-        <p class="lead mb-0 mx-auto" style="max-width: 700px; opacity: 0.95;">
-          Memahami diabetes adalah langkah pertama untuk melawannya. 
-          Temukan informasi lengkap mulai dari gejala, pencegahan, hingga manajemen kesehatan yang tepat.
+        <p class="lead mb-0 mx-auto" style="max-width: 700px; opacity: 0.95">
+          Memahami diabetes adalah langkah pertama untuk melawannya. Temukan
+          informasi lengkap mulai dari gejala, pencegahan, hingga manajemen
+          kesehatan yang tepat.
         </p>
       </div>
     </div>
 
     <div class="container mb-5">
-      
       <div class="row justify-content-center mb-4">
         <div class="col-lg-10 text-center">
-             <ul class="nav nav-pills justify-content-center" id="pills-tab" role="tablist">
-                <li class="nav-item">
-                    <button class="nav-link active" data-bs-toggle="pill" data-bs-target="#pills-umum" type="button">
-                        <i class="fa-solid fa-info-circle me-2"></i>Apa itu Diabetes?
-                    </button>
-                </li>
-                <li class="nav-item">
-                    <button class="nav-link" data-bs-toggle="pill" data-bs-target="#pills-gejala" type="button">
-                        <i class="fa-solid fa-triangle-exclamation me-2"></i>Gejala & Risiko
-                    </button>
-                </li>
-                <li class="nav-item">
-                    <button class="nav-link" data-bs-toggle="pill" data-bs-target="#pills-cegah" type="button">
-                        <i class="fa-solid fa-shield-heart me-2"></i>Pencegahan
-                    </button>
-                </li>
-             </ul>
+          <ul
+            class="nav nav-pills justify-content-center"
+            id="pills-tab"
+            role="tablist"
+          >
+            <li class="nav-item">
+              <button
+                class="nav-link active"
+                data-bs-toggle="pill"
+                data-bs-target="#pills-umum"
+                type="button"
+              >
+                <i class="fa-solid fa-info-circle me-2"></i>Apa itu Diabetes?
+              </button>
+            </li>
+            <li class="nav-item">
+              <button
+                class="nav-link"
+                data-bs-toggle="pill"
+                data-bs-target="#pills-gejala"
+                type="button"
+              >
+                <i class="fa-solid fa-triangle-exclamation me-2"></i>Gejala &
+                Risiko
+              </button>
+            </li>
+            <li class="nav-item">
+              <button
+                class="nav-link"
+                data-bs-toggle="pill"
+                data-bs-target="#pills-cegah"
+                type="button"
+              >
+                <i class="fa-solid fa-shield-heart me-2"></i>Pencegahan
+              </button>
+            </li>
+          </ul>
         </div>
       </div>
 
       <div class="tab-content" id="pills-tabContent">
-        
         <div class="tab-pane fade show active" id="pills-umum">
-            <div class="card border-0 shadow-sm p-4 mb-4 bg-primary bg-opacity-10">
-                <div class="row align-items-center">
-                    <div class="col-md-5 text-center">
-                        <img src="{{ url_for('static', filename='assets/ilustrasi.png') }}" class="img-fluid img-edukasi" alt="Ilustrasi Medis Diabetes" style="max-height: 280px;">
-                    </div>
-                    <div class="col-md-7">
-                        <h3 class="fw-bold text-primary mb-3">Mengenal Tubuh & Insulin</h3>
-                        <p class="text-dark lead" style="font-size: 1.1rem;">
-                            Seperti ilustrasi di samping, pemeriksaan medis sangat penting karena proses metabolisme gula terjadi di dalam tubuh yang tidak terlihat.
-                        </p>
-                        <p class="text-secondary">
-                            Diabetes terjadi ketika tubuh gagal memproses glukosa akibat masalah pada hormon <strong>Insulin</strong>. Tanpa bantuan medis dan teknologi, kita sulit mengetahui apa yang terjadi di dalam pembuluh darah kita.
-                        </p>
-                    </div>
-                </div>
+          <div
+            class="card border-0 shadow-sm p-4 mb-4 bg-primary bg-opacity-10"
+          >
+            <div class="row align-items-center">
+              <div class="col-md-5 text-center">
+                <img
+                  src="{{ url_for('static', filename='assets/ilustrasi.png') }}"
+                  class="img-fluid img-edukasi"
+                  alt="Ilustrasi Medis Diabetes"
+                  style="max-height: 280px"
+                />
+              </div>
+              <div class="col-md-7">
+                <h3 class="fw-bold text-primary mb-3">
+                  Mengenal Tubuh & Insulin
+                </h3>
+                <p class="text-dark lead" style="font-size: 1.1rem">
+                  Seperti ilustrasi di samping, pemeriksaan medis sangat penting
+                  karena proses metabolisme gula terjadi di dalam tubuh yang
+                  tidak terlihat.
+                </p>
+                <p class="text-secondary">
+                  Diabetes terjadi ketika tubuh gagal memproses glukosa akibat
+                  masalah pada hormon <strong>Insulin</strong>. Tanpa bantuan
+                  medis dan teknologi, kita sulit mengetahui apa yang terjadi di
+                  dalam pembuluh darah kita.
+                </p>
+              </div>
             </div>
+          </div>
 
-            <div class="row g-4 justify-content-center">
-                <div class="col-md-6">
-                    <div class="card info-card shadow-sm p-4">
-                        <h5 class="fw-bold mb-3 text-dark"><i class="fa-solid fa-book me-2"></i>Definisi Singkat</h5>
-                        <p class="text-secondary text-justify">
-                            Diabetes Melitus (DM) adalah penyakit kronis yang ditandai dengan tingginya kadar gula darah. Ini ibarat "lalu lintas macet" di dalam darah karena gula tidak bisa masuk ke dalam sel untuk menjadi energi.
-                        </p>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="card info-card shadow-sm p-4">
-                        <h5 class="fw-bold mb-3 text-primary"><i class="fa-solid fa-layer-group me-2"></i>Tipe Utama</h5>
-                        <ul class="list-group list-group-flush small">
-                            <li class="list-group-item"><strong>Tipe 1:</strong> Tubuh berhenti memproduksi insulin (Autoimun).</li>
-                            <li class="list-group-item"><strong>Tipe 2:</strong> Tubuh memproduksi insulin tapi tidak bekerja efektif (Resistensi).</li>
-                            <li class="list-group-item"><strong>Gestasional:</strong> Muncul saat hamil.</li>
-                        </ul>
-                    </div>
-                </div>
+          <div class="row g-4 justify-content-center">
+            <div class="col-md-6">
+              <div class="card info-card shadow-sm p-4">
+                <h5 class="fw-bold mb-3 text-dark">
+                  <i class="fa-solid fa-book me-2"></i>Definisi Singkat
+                </h5>
+                <p class="text-secondary text-justify">
+                  Diabetes Melitus (DM) adalah penyakit kronis yang ditandai
+                  dengan tingginya kadar gula darah. Ini ibarat "lalu lintas
+                  macet" di dalam darah karena gula tidak bisa masuk ke dalam
+                  sel untuk menjadi energi.
+                </p>
+              </div>
             </div>
+            <div class="col-md-6">
+              <div class="card info-card shadow-sm p-4">
+                <h5 class="fw-bold mb-3 text-primary">
+                  <i class="fa-solid fa-layer-group me-2"></i>Tipe Utama
+                </h5>
+                <ul class="list-group list-group-flush small">
+                  <li class="list-group-item">
+                    <strong>Tipe 1:</strong> Tubuh berhenti memproduksi insulin
+                    (Autoimun).
+                  </li>
+                  <li class="list-group-item">
+                    <strong>Tipe 2:</strong> Tubuh memproduksi insulin tapi
+                    tidak bekerja efektif (Resistensi).
+                  </li>
+                  <li class="list-group-item">
+                    <strong>Gestasional:</strong> Muncul saat hamil.
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div class="tab-pane fade" id="pills-gejala">
-            <div class="row g-4">
-                <div class="col-lg-12 mb-2">
-                    <div class="alert alert-warning border-0 shadow-sm d-flex align-items-center" role="alert">
-                        <i class="fa-solid fa-bell fa-2x me-3 text-warning"></i>
-                        <div>
-                            <strong>Waspada "Silent Killer"!</strong> Diabetes seringkali tidak menunjukkan gejala di tahap awal.
-                        </div>
-                    </div>
+          <div class="row g-4">
+            <div class="col-lg-12 mb-2">
+              <div
+                class="alert alert-warning border-0 shadow-sm d-flex align-items-center"
+                role="alert"
+              >
+                <i class="fa-solid fa-bell fa-2x me-3 text-warning"></i>
+                <div>
+                  <strong>Waspada "Silent Killer"!</strong> Diabetes seringkali
+                  tidak menunjukkan gejala di tahap awal.
                 </div>
-
-                <div class="col-md-6">
-                    <div class="card h-100 border-0 shadow-sm p-4">
-                        <h4 class="fw-bold mb-4 text-danger"><i class="fa-solid fa-head-side-virus me-2"></i>Gejala Klasik (3P)</h4>
-                        <ul class="list-group list-group-flush">
-                            <li class="list-group-item d-flex align-items-center">
-                                <i class="fa-solid fa-faucet-drip text-primary me-3 fa-lg"></i>
-                                <div><span class="fw-bold">Poliuria:</span> Sering buang air kecil (terutama malam).</div>
-                            </li>
-                            <li class="list-group-item d-flex align-items-center">
-                                <i class="fa-solid fa-glass-water text-primary me-3 fa-lg"></i>
-                                <div><span class="fw-bold">Polidipsia:</span> Sering merasa haus berlebihan.</div>
-                            </li>
-                            <li class="list-group-item d-flex align-items-center">
-                                <i class="fa-solid fa-utensils text-primary me-3 fa-lg"></i>
-                                <div><span class="fw-bold">Polifagia:</span> Cepat lapar meski sudah makan.</div>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-
-                <div class="col-md-6">
-                    <div class="card h-100 border-0 shadow-sm p-4 bg-light">
-                        <h4 class="fw-bold mb-4 text-dark"><i class="fa-solid fa-chart-line me-2"></i>Faktor Risiko Utama</h4>
-                        <div class="row g-3">
-                            <div class="col-6">
-                                <div class="p-3 bg-white rounded text-center h-100 shadow-sm">
-                                    <h6 class="fw-bold text-danger">Obesitas</h6>
-                                    <small class="text-muted">Berat badan berlebih memperberat kerja insulin.</small>
-                                </div>
-                            </div>
-                            <div class="col-6">
-                                <div class="p-3 bg-white rounded text-center h-100 shadow-sm">
-                                    <h6 class="fw-bold text-success">Genetik</h6>
-                                    <small class="text-muted">Ada riwayat orang tua atau saudara kandung.</small>
-                                </div>
-                            </div>
-                            <div class="col-6">
-                                <div class="p-3 bg-white rounded text-center h-100 shadow-sm">
-                                    <h6 class="fw-bold text-primary">Usia</h6>
-                                    <small class="text-muted">Risiko meningkat drastis di atas 45 tahun.</small>
-                                </div>
-                            </div>
-                            <div class="col-6">
-                                <div class="p-3 bg-white rounded text-center h-100 shadow-sm">
-                                    <h6 class="fw-bold text-warning">Malas Gerak</h6>
-                                    <small class="text-muted">Gaya hidup sedentari (kurang aktivitas fisik).</small>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+              </div>
             </div>
+
+            <div class="col-md-6">
+              <div class="card h-100 border-0 shadow-sm p-4">
+                <h4 class="fw-bold mb-4 text-danger">
+                  <i class="fa-solid fa-head-side-virus me-2"></i>Gejala Klasik
+                  (3P)
+                </h4>
+                <ul class="list-group list-group-flush">
+                  <li class="list-group-item d-flex align-items-center">
+                    <i
+                      class="fa-solid fa-faucet-drip text-primary me-3 fa-lg"
+                    ></i>
+                    <div>
+                      <span class="fw-bold">Poliuria:</span> Sering buang air
+                      kecil (terutama malam).
+                    </div>
+                  </li>
+                  <li class="list-group-item d-flex align-items-center">
+                    <i
+                      class="fa-solid fa-glass-water text-primary me-3 fa-lg"
+                    ></i>
+                    <div>
+                      <span class="fw-bold">Polidipsia:</span> Sering merasa
+                      haus berlebihan.
+                    </div>
+                  </li>
+                  <li class="list-group-item d-flex align-items-center">
+                    <i class="fa-solid fa-utensils text-primary me-3 fa-lg"></i>
+                    <div>
+                      <span class="fw-bold">Polifagia:</span> Cepat lapar meski
+                      sudah makan.
+                    </div>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="card h-100 border-0 shadow-sm p-4 bg-light">
+                <h4 class="fw-bold mb-4 text-dark">
+                  <i class="fa-solid fa-chart-line me-2"></i>Faktor Risiko Utama
+                </h4>
+                <div class="row g-3">
+                  <div class="col-6">
+                    <div
+                      class="p-3 bg-white rounded text-center h-100 shadow-sm"
+                    >
+                      <h6 class="fw-bold text-danger">Obesitas</h6>
+                      <small class="text-muted"
+                        >Berat badan berlebih memperberat kerja insulin.</small
+                      >
+                    </div>
+                  </div>
+                  <div class="col-6">
+                    <div
+                      class="p-3 bg-white rounded text-center h-100 shadow-sm"
+                    >
+                      <h6 class="fw-bold text-success">Genetik</h6>
+                      <small class="text-muted"
+                        >Ada riwayat orang tua atau saudara kandung.</small
+                      >
+                    </div>
+                  </div>
+                  <div class="col-6">
+                    <div
+                      class="p-3 bg-white rounded text-center h-100 shadow-sm"
+                    >
+                      <h6 class="fw-bold text-primary">Usia</h6>
+                      <small class="text-muted"
+                        >Risiko meningkat drastis di atas 45 tahun.</small
+                      >
+                    </div>
+                  </div>
+                  <div class="col-6">
+                    <div
+                      class="p-3 bg-white rounded text-center h-100 shadow-sm"
+                    >
+                      <h6 class="fw-bold text-warning">Malas Gerak</h6>
+                      <small class="text-muted"
+                        >Gaya hidup sedentari (kurang aktivitas fisik).</small
+                      >
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div class="tab-pane fade" id="pills-cegah">
-            <div class="card border-0 shadow-sm p-4 mb-5 bg-success bg-opacity-10">
-                <div class="row align-items-center flex-md-row-reverse">
-                    <div class="col-md-5 text-center">
-                        <img src="{{ url_for('static', filename='assets/sehat.png') }}" class="img-fluid img-edukasi" alt="Gaya Hidup Sehat" style="max-height: 280px;">
-                    </div>
-                    <div class="col-md-7">
-                        <h3 class="fw-bold text-success mb-3">Kunci Kesehatan Ada di Tangan Anda</h3>
-                        <p class="text-dark lead">
-                            "Mencegah jauh lebih baik dan lebih murah daripada mengobati."
-                        </p>
-                        <p class="text-secondary">
-                            Gambar ini merepresentasikan harmoni gaya hidup yang menjadi benteng pertahanan terbaik melawan diabetes. Kombinasi <strong>pola makan seimbang</strong> (banyak sayur & buah), <strong>olahraga rutin</strong>, dan <strong>pikiran positif</strong> dapat menurunkan risiko diabetes hingga 58%.
-                        </p>
-                    </div>
-                </div>
+          <div
+            class="card border-0 shadow-sm p-4 mb-5 bg-success bg-opacity-10"
+          >
+            <div class="row align-items-center flex-md-row-reverse">
+              <div class="col-md-5 text-center">
+                <img
+                  src="{{ url_for('static', filename='assets/sehat.png') }}"
+                  class="img-fluid img-edukasi"
+                  alt="Gaya Hidup Sehat"
+                  style="max-height: 280px"
+                />
+              </div>
+              <div class="col-md-7">
+                <h3 class="fw-bold text-success mb-3">
+                  Kunci Kesehatan Ada di Tangan Anda
+                </h3>
+                <p class="text-dark lead">
+                  "Mencegah jauh lebih baik dan lebih murah daripada mengobati."
+                </p>
+                <p class="text-secondary">
+                  Gambar ini merepresentasikan harmoni gaya hidup yang menjadi
+                  benteng pertahanan terbaik melawan diabetes. Kombinasi
+                  <strong>pola makan seimbang</strong> (banyak sayur & buah),
+                  <strong>olahraga rutin</strong>, dan
+                  <strong>pikiran positif</strong> dapat menurunkan risiko
+                  diabetes hingga 58%.
+                </p>
+              </div>
             </div>
+          </div>
 
-            <div class="text-center mb-4">
-                <h4 class="fw-bold text-dark">5 Pilar Pengelolaan Diabetes (PERKENI)</h4>
-            </div>
+          <div class="text-center mb-4">
+            <h4 class="fw-bold text-dark">
+              5 Pilar Pengelolaan Diabetes (PERKENI)
+            </h4>
+          </div>
 
-            <div class="row row-cols-1 row-cols-md-3 row-cols-lg-5 g-3">
-                <div class="col">
-                    <div class="card h-100 border-0 shadow-sm text-center p-3">
-                        <div class="mb-3 text-info"><i class="fa-solid fa-chalkboard-user fa-2x"></i></div>
-                        <h6 class="fw-bold">1. Edukasi</h6>
-                        <small class="text-secondary">Terus belajar tentang kondisi tubuh sendiri.</small>
-                    </div>
+          <div class="row row-cols-1 row-cols-md-3 row-cols-lg-5 g-3">
+            <div class="col">
+              <div class="card h-100 border-0 shadow-sm text-center p-3">
+                <div class="mb-3 text-info">
+                  <i class="fa-solid fa-chalkboard-user fa-2x"></i>
                 </div>
-                <div class="col">
-                    <div class="card h-100 border-0 shadow-sm text-center p-3">
-                        <div class="mb-3 text-success"><i class="fa-solid fa-apple-whole fa-2x"></i></div>
-                        <h6 class="fw-bold">2. Nutrisi</h6>
-                        <small class="text-secondary">Batasi gula, garam, dan lemak (GGL).</small>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="card h-100 border-0 shadow-sm text-center p-3">
-                        <div class="mb-3 text-danger"><i class="fa-solid fa-person-running fa-2x"></i></div>
-                        <h6 class="fw-bold">3. Fisik</h6>
-                        <small class="text-secondary">Olahraga 30 menit sehari (jalan cepat/jogging).</small>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="card h-100 border-0 shadow-sm text-center p-3">
-                        <div class="mb-3 text-warning"><i class="fa-solid fa-pills fa-2x"></i></div>
-                        <h6 class="fw-bold">4. Obat</h6>
-                        <small class="text-secondary">Jika diresepkan, patuhi jadwal minum obat.</small>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="card h-100 border-0 shadow-sm text-center p-3">
-                        <div class="mb-3 text-primary"><i class="fa-solid fa-microscope fa-2x"></i></div>
-                        <h6 class="fw-bold">5. Monitor</h6>
-                        <small class="text-secondary">Cek gula darah secara berkala.</small>
-                    </div>
-                </div>
+                <h6 class="fw-bold">1. Edukasi</h6>
+                <small class="text-secondary"
+                  >Terus belajar tentang kondisi tubuh sendiri.</small
+                >
+              </div>
             </div>
+            <div class="col">
+              <div class="card h-100 border-0 shadow-sm text-center p-3">
+                <div class="mb-3 text-success">
+                  <i class="fa-solid fa-apple-whole fa-2x"></i>
+                </div>
+                <h6 class="fw-bold">2. Nutrisi</h6>
+                <small class="text-secondary"
+                  >Batasi gula, garam, dan lemak (GGL).</small
+                >
+              </div>
+            </div>
+            <div class="col">
+              <div class="card h-100 border-0 shadow-sm text-center p-3">
+                <div class="mb-3 text-danger">
+                  <i class="fa-solid fa-person-running fa-2x"></i>
+                </div>
+                <h6 class="fw-bold">3. Fisik</h6>
+                <small class="text-secondary"
+                  >Olahraga 30 menit sehari (jalan cepat/jogging).</small
+                >
+              </div>
+            </div>
+            <div class="col">
+              <div class="card h-100 border-0 shadow-sm text-center p-3">
+                <div class="mb-3 text-warning">
+                  <i class="fa-solid fa-pills fa-2x"></i>
+                </div>
+                <h6 class="fw-bold">4. Obat</h6>
+                <small class="text-secondary"
+                  >Jika diresepkan, patuhi jadwal minum obat.</small
+                >
+              </div>
+            </div>
+            <div class="col">
+              <div class="card h-100 border-0 shadow-sm text-center p-3">
+                <div class="mb-3 text-primary">
+                  <i class="fa-solid fa-microscope fa-2x"></i>
+                </div>
+                <h6 class="fw-bold">5. Monitor</h6>
+                <small class="text-secondary"
+                  >Cek gula darah secara berkala.</small
+                >
+              </div>
+            </div>
+          </div>
         </div>
+      </div>
+    </div>
+    <footer class="mt-auto py-4 bg-white border-top text-center">
+      <div class="container">
+        <p class="text-muted small mb-0">
+          © 2025 Sistem Prediksi Diabetes | DiabCheck
+        </p>
+      </div>
+    </footer>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 
+    <div class="modal fade" id="loginModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" style="max-width: 420px">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+          <div class="modal-header border-0 pb-0">
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body px-4 pb-4 pt-0 text-center">
+            <h4 class="fw-bold mb-1">Silakan Masuk</h4>
+            <p class="text-muted small mb-4">Akses riwayat kesehatan Anda</p>
+
+            <form method="POST" action="{{ url_for('login') }}">
+              <div class="form-floating mb-3 text-start">
+                <input
+                  type="text"
+                  name="username"
+                  class="form-control"
+                  placeholder="Username"
+                  required
+                />
+                <label>Username</label>
+              </div>
+              <div class="form-floating mb-3 text-start">
+                <input
+                  type="password"
+                  name="password"
+                  class="form-control"
+                  placeholder="Password"
+                  required
+                />
+                <label>Password</label>
+              </div>
+
+              <div class="mb-3 d-flex justify-content-center">
+                <div class="g-recaptcha" data-sitekey="{{ site_key }}"></div>
+              </div>
+
+              <div class="d-grid mb-3">
+                <button
+                  type="submit"
+                  class="btn btn-primary btn-lg rounded-3 fw-bold"
+                >
+                  Masuk
+                </button>
+              </div>
+            </form>
+            <div class="text-center pt-2 border-top">
+              <small class="text-muted"
+                >Belum punya akun?
+                <a
+                  href="#"
+                  class="text-decoration-none fw-bold"
+                  data-bs-dismiss="modal"
+                  data-bs-toggle="modal"
+                  data-bs-target="#registerModal"
+                  >Daftar Sekarang</a
+                ></small
+              >
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
-    <footer class="mt-auto py-4 bg-white border-top text-center">
-      <div class="container">
-        <p class="text-muted small mb-0">© 2025 Pusat Edukasi Diabetes | Sumber: Kemenkes RI & PERKENI</p>
-      </div>
-    </footer>
+    <div class="modal fade" id="registerModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" style="max-width: 420px">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+          <div class="modal-header border-0 pb-0">
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body px-4 pb-4 pt-0 text-center">
+            <h4 class="fw-bold mb-1">Buat Akun Baru</h4>
+            <p class="text-muted small mb-4">Gratis dan cepat</p>
 
+            <form method="POST" action="{{ url_for('register') }}">
+              <div class="form-floating mb-3 text-start">
+                <input
+                  type="text"
+                  name="username"
+                  class="form-control"
+                  placeholder="Username Baru"
+                  required
+                />
+                <label>Username Baru</label>
+              </div>
+              <div class="form-floating mb-3 text-start">
+                <input
+                  type="password"
+                  name="password"
+                  class="form-control"
+                  placeholder="Password"
+                  required
+                />
+                <label>Password</label>
+              </div>
+
+              <div class="mb-3 d-flex justify-content-center">
+                <div class="g-recaptcha" data-sitekey="{{ site_key }}"></div>
+              </div>
+
+              <div class="d-grid mb-3">
+                <button
+                  type="submit"
+                  class="btn btn-success btn-lg rounded-3 fw-bold"
+                >
+                  Daftar Akun
+                </button>
+              </div>
+            </form>
+            <div class="text-center pt-2 border-top">
+              <small class="text-muted"
+                >Sudah punya akun?
+                <a
+                  href="#"
+                  class="text-decoration-none fw-bold text-success"
+                  data-bs-dismiss="modal"
+                  data-bs-toggle="modal"
+                  data-bs-target="#loginModal"
+                  >Login</a
+                ></small
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   </body>
 </html>

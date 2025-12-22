@@ -31,7 +31,7 @@
         background-color: #ffffff !important;
         transition: all 0.3s ease-in-out;
       }
-      
+
       .navbar-brand {
         font-weight: 700;
         color: #0d6efd !important;
@@ -45,7 +45,8 @@
         transition: color 0.2s;
       }
 
-      .nav-link:hover, .nav-link.active {
+      .nav-link:hover,
+      .nav-link.active {
         color: #0d6efd !important;
       }
 
@@ -60,7 +61,7 @@
         border: none;
         border-radius: 16px;
         background: white;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
         transition: transform 0.3s ease;
       }
       .card-stats:hover {
@@ -81,7 +82,7 @@
       .table-card {
         border: none;
         border-radius: 20px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
         overflow: hidden;
         background: white;
       }
@@ -97,7 +98,7 @@
         vertical-align: middle;
         color: #495057;
       }
-      
+
       /* BADGES */
       .badge-status {
         padding: 8px 12px;
@@ -105,9 +106,18 @@
         font-weight: 500;
         font-size: 0.85rem;
       }
-      .bg-soft-danger { background-color: rgba(220, 53, 69, 0.1); color: #dc3545; }
-      .bg-soft-success { background-color: rgba(25, 135, 84, 0.1); color: #198754; }
-      .bg-soft-warning { background-color: rgba(255, 193, 7, 0.1); color: #856404; }
+      .bg-soft-danger {
+        background-color: rgba(220, 53, 69, 0.1);
+        color: #dc3545;
+      }
+      .bg-soft-success {
+        background-color: rgba(25, 135, 84, 0.1);
+        color: #198754;
+      }
+      .bg-soft-warning {
+        background-color: rgba(255, 193, 7, 0.1);
+        color: #856404;
+      }
     </style>
   </head>
   <body>
@@ -127,23 +137,43 @@
         <div class="collapse navbar-collapse" id="navbarNav">
           <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center">
             <li class="nav-item">
-              <a class="nav-link" href="{{ url_for('education') }}">Pusat Edukasi</a>
+              <a class="nav-link" href="{{ url_for('education') }}"
+                >Pusat Edukasi</a
+              >
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="{{ url_for('check_diabetes_page') }}">Cek Diabetes</a>
+              <a class="nav-link" href="{{ url_for('check_diabetes_page') }}"
+                >Cek Diabetes</a
+              >
             </li>
             <li class="nav-item">
-              <a class="nav-link active fw-bold" href="{{ url_for('prediction_history_page') }}">Riwayat</a>
+              <a
+                class="nav-link active fw-bold"
+                href="{{ url_for('prediction_history_page') }}"
+                >Riwayat</a
+              >
             </li>
             <li class="nav-item d-none d-lg-block mx-2 text-muted">|</li>
             {% if current_user.is_authenticated %}
             <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle text-dark fw-bold" href="#" role="button" data-bs-toggle="dropdown">
-                   Halo, {{ current_user.username }}
-                </a>
-                <ul class="dropdown-menu dropdown-menu-end shadow border-0">
-                    <li><a class="dropdown-item text-danger" href="{{ url_for('logout') }}"><i class="fa-solid fa-right-from-bracket me-2"></i>Logout</a></li>
-                </ul>
+              <a
+                class="nav-link dropdown-toggle text-dark fw-bold"
+                href="#"
+                role="button"
+                data-bs-toggle="dropdown"
+              >
+                Halo, {{ current_user.username }}
+              </a>
+              <ul class="dropdown-menu dropdown-menu-end shadow border-0">
+                <li>
+                  <a
+                    class="dropdown-item text-danger"
+                    href="{{ url_for('logout') }}"
+                    ><i class="fa-solid fa-right-from-bracket me-2"></i
+                    >Logout</a
+                  >
+                </li>
+              </ul>
             </li>
             {% endif %}
           </ul>
@@ -153,25 +183,30 @@
 
     <div class="container main-content">
       <div class="d-flex justify-content-between align-items-center mb-4">
-          <div>
-              <h2 class="fw-bold mb-0 text-dark">Jurnal Kesehatan</h2>
-              <p class="text-muted small">Rekam medis digital prediksi diabetes Anda</p>
-          </div>
-          <a href="{{ url_for('check_diabetes_page') }}" class="btn btn-primary rounded-pill shadow-sm px-4 fw-bold">
-              <i class="fa-solid fa-plus me-2"></i>Tes Baru
-          </a>
+        <div>
+          <h2 class="fw-bold mb-0 text-dark">Jurnal Kesehatan</h2>
+          <p class="text-muted small">
+            Rekam medis digital prediksi diabetes Anda
+          </p>
+        </div>
+        <a
+          href="{{ url_for('check_diabetes_page') }}"
+          class="btn btn-primary rounded-pill shadow-sm px-4 fw-bold"
+        >
+          <i class="fa-solid fa-plus me-2"></i>Tes Baru
+        </a>
       </div>
 
       {% if history|length > 0 %}
       <div class="row g-3 mb-5">
-        {% set total_records = history|length %}
-        {% set high_risk_count = history|selectattr('risk_level', 'in', ['Tinggi', 'Sangat Tinggi'])|list|length %}
-        {% set latest_risk = history[0].risk_level %}
+        {% set total_records = history|length %} {% set high_risk_count =
+        history|selectattr('risk_level', 'in', ['Tinggi', 'Sangat
+        Tinggi'])|list|length %} {% set latest_risk = history[0].risk_level %}
 
         <div class="col-md-4">
           <div class="card card-stats p-4">
             <div class="icon-box bg-primary bg-opacity-10 text-primary">
-                <i class="fa-solid fa-folder-open"></i>
+              <i class="fa-solid fa-folder-open"></i>
             </div>
             <h3 class="fw-bold mb-0">{{ total_records }}</h3>
             <span class="text-muted small">Total Pemeriksaan</span>
@@ -180,7 +215,7 @@
         <div class="col-md-4">
           <div class="card card-stats p-4">
             <div class="icon-box bg-warning bg-opacity-10 text-warning">
-                <i class="fa-solid fa-triangle-exclamation"></i>
+              <i class="fa-solid fa-triangle-exclamation"></i>
             </div>
             <h3 class="fw-bold mb-0">{{ high_risk_count }}</h3>
             <span class="text-muted small">Kali Terdeteksi Risiko Tinggi</span>
@@ -189,11 +224,15 @@
         <div class="col-md-4">
           <div class="card card-stats p-4">
             {% if 'Tinggi' in latest_risk %}
-                <div class="icon-box bg-danger bg-opacity-10 text-danger"><i class="fa-solid fa-heart-crack"></i></div>
-                <h5 class="fw-bold text-danger mb-0">{{ latest_risk }}</h5>
+            <div class="icon-box bg-danger bg-opacity-10 text-danger">
+              <i class="fa-solid fa-heart-crack"></i>
+            </div>
+            <h5 class="fw-bold text-danger mb-0">{{ latest_risk }}</h5>
             {% else %}
-                <div class="icon-box bg-success bg-opacity-10 text-success"><i class="fa-solid fa-heart-circle-check"></i></div>
-                <h5 class="fw-bold text-success mb-0">{{ latest_risk }}</h5>
+            <div class="icon-box bg-success bg-opacity-10 text-success">
+              <i class="fa-solid fa-heart-circle-check"></i>
+            </div>
+            <h5 class="fw-bold text-success mb-0">{{ latest_risk }}</h5>
             {% endif %}
             <span class="text-muted small">Status Terakhir</span>
           </div>
@@ -201,62 +240,115 @@
       </div>
 
       <div class="card table-card mb-5 p-4">
-        <h5 class="fw-bold mb-4 text-dark"><i class="fa-solid fa-chart-line me-2 text-primary"></i>Tren Kesehatan</h5>
-        <div style="height: 300px;">
-            <canvas id="healthChart"></canvas>
+        <h5 class="fw-bold mb-4 text-dark">
+          <i class="fa-solid fa-chart-line me-2 text-primary"></i>Tren Kesehatan
+        </h5>
+        <div style="height: 300px">
+          <canvas id="healthChart"></canvas>
         </div>
       </div>
 
       <div class="card table-card">
         <div class="table-responsive">
-            <table class="table mb-0">
-              <thead>
-                <tr>
-                  <th>Tanggal</th>
-                  <th>Status Risiko</th>
-                  <th>Gula Darah</th>
-                  <th>BMI</th>
-                  <th>Probabilitas</th>
-                  <th class="text-center">Aksi</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for record in history %}
-                <tr>
-                  <td>
-                    <div class="fw-bold text-dark">{{ record.prediction_date.strftime('%d %b %Y') }}</div>
-                    <small class="text-muted">{{ record.prediction_date.strftime('%H:%M WIB') }}</small>
-                  </td>
-                  <td>
-                    {% if 'Tinggi' in record.risk_level or 'Sangat' in record.risk_level %}
-                        <span class="badge-status bg-soft-danger"><i class="fa-solid fa-circle-exclamation me-1"></i> {{ record.risk_level }}</span>
-                    {% elif 'Sedang' in record.risk_level %}
-                        <span class="badge-status bg-soft-warning">{{ record.risk_level }}</span>
-                    {% else %}
-                        <span class="badge-status bg-soft-success"><i class="fa-solid fa-check me-1"></i> {{ record.risk_level }}</span>
-                    {% endif %}
-                  </td>
-                  <td>{{ "%.0f"|format(record.glucose) }} <span class="text-muted small">mg/dL</span></td>
-                  <td>{{ "%.1f"|format(record.bmi) }}</td>
-                  <td>
-                      <div class="d-flex align-items-center">
-                          <span class="me-2 text-muted small">{{ "%.0f"|format(record.probability) }}%</span>
-                          <div class="progress" style="height: 6px; width: 60px;">
-                              <div class="progress-bar {% if record.probability > 50 %}bg-danger{% else %}bg-success{% endif %}" role="progressbar" style="width: {{ record.probability }}%"></div>
-                          </div>
-                      </div>
-                  </td>
-                  <td class="text-center">
-                    <form action="{{ url_for('delete_history', prediction_id=record.id) }}" method="POST" class="d-inline">
-                        <button type="submit" class="btn btn-outline-danger btn-sm rounded-circle" style="width: 32px; height: 32px; padding: 0;" onclick="return confirm('Hapus data ini?')" title="Hapus">
-                            <i class="fa-solid fa-trash-can"></i>
-                        </button>
-                    </form>
-                  </td>
-                </tr>
-                {% endfor %}
-              </tbody>
-            </table>
+          <table class="table mb-0">
+            <thead>
+              <tr>
+                <th>Tanggal</th>
+                <th>Status Risiko</th>
+                <th>Gula Darah</th>
+                <th>BMI</th>
+                <th>Probabilitas</th>
+                <th class="text-center">Detail</th>
+                <th class="text-center">Aksi</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for record in history %}
+              <tr>
+                <td>
+                  <div class="fw-bold text-dark">
+                    {{ record.prediction_date.strftime('%d %b %Y') }}
+                  </div>
+                  <small class="text-muted"
+                    >{{ record.prediction_date.strftime('%H:%M WIB') }}</small
+                  >
+                </td>
+                <td>
+                  {% if 'Tinggi' in record.risk_level or 'Sangat' in
+                  record.risk_level %}
+                  <span class="badge-status bg-soft-danger"
+                    ><i class="fa-solid fa-circle-exclamation me-1"></i> {{
+                    record.risk_level }}</span
+                  >
+                  {% elif 'Sedang' in record.risk_level %}
+                  <span class="badge-status bg-soft-warning"
+                    >{{ record.risk_level }}</span
+                  >
+                  {% else %}
+                  <span class="badge-status bg-soft-success"
+                    ><i class="fa-solid fa-check me-1"></i> {{ record.risk_level
+                    }}</span
+                  >
+                  {% endif %}
+                </td>
+                <td>
+                  {{ "%.0f"|format(record.glucose) }}
+                  <span class="text-muted small">mg/dL</span>
+                </td>
+                <td>{{ "%.1f"|format(record.bmi) }}</td>
+                <td>
+                  <div class="d-flex align-items-center">
+                    <span class="me-2 text-muted small"
+                      >{{ "%.0f"|format(record.probability) }}%</span
+                    >
+                    <div class="progress" style="height: 6px; width: 60px">
+                      <div
+                        class="progress-bar {% if record.probability > 50 %}bg-danger{% else %}bg-success{% endif %}"
+                        role="progressbar"
+                        style="width: {{ record.probability }}%"
+                      ></div>
+                    </div>
+                  </div>
+                </td>
+
+                <td class="text-center">
+                  <a
+                    href="{{ url_for('prediction_detail', prediction_id=record.id) }}"
+                    class="btn btn-outline-primary btn-sm rounded-circle"
+                    style="
+                      width: 32px;
+                      height: 32px;
+                      padding: 0;
+                      display: inline-flex;
+                      align-items: center;
+                      justify-content: center;
+                    "
+                    title="Lihat Detail"
+                  >
+                    <i class="fa-solid fa-eye"></i>
+                  </a>
+                </td>
+                <td class="text-center">
+                  <form
+                    action="{{ url_for('delete_history', prediction_id=record.id) }}"
+                    method="POST"
+                    class="d-inline"
+                  >
+                    <button
+                      type="submit"
+                      class="btn btn-outline-danger btn-sm rounded-circle"
+                      style="width: 32px; height: 32px; padding: 0"
+                      onclick="return confirm('Hapus data ini?')"
+                      title="Hapus"
+                    >
+                      <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                  </form>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
         </div>
       </div>
 
@@ -314,19 +406,27 @@
 
       {% else %}
       <div class="text-center py-5">
-          <div class="mb-3 text-muted opacity-25">
-              <i class="fa-solid fa-file-medical fa-5x"></i>
-          </div>
-          <h4 class="fw-bold text-secondary">Belum Ada Riwayat</h4>
-          <p class="text-muted">Lakukan tes prediksi pertama Anda untuk mulai mencatat kesehatan.</p>
-          <a href="{{ url_for('check_diabetes_page') }}" class="btn btn-primary rounded-pill px-4 mt-2">Mulai Tes</a>
+        <div class="mb-3 text-muted opacity-25">
+          <i class="fa-solid fa-file-medical fa-5x"></i>
+        </div>
+        <h4 class="fw-bold text-secondary">Belum Ada Riwayat</h4>
+        <p class="text-muted">
+          Lakukan tes prediksi pertama Anda untuk mulai mencatat kesehatan.
+        </p>
+        <a
+          href="{{ url_for('check_diabetes_page') }}"
+          class="btn btn-primary rounded-pill px-4 mt-2"
+          >Mulai Tes</a
+        >
       </div>
       {% endif %}
     </div>
 
     <footer class="mt-auto py-4 bg-white border-top text-center">
       <div class="container">
-        <p class="text-muted small mb-0">© 2025 Sistem Prediksi Diabetes | DiabCheck</p>
+        <p class="text-muted small mb-0">
+          © 2025 Sistem Prediksi Diabetes | DiabCheck
+        </p>
       </div>
     </footer>
 

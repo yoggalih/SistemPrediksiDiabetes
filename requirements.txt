@@ -10,3 +10,4 @@ requests
 Flask-SQLAlchemy  # ORM untuk interaksi database
 PyMySQL  # Konektor untuk MySQL
 gunicorn
+python-dotenv

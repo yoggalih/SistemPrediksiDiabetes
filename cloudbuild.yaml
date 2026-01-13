@@ -30,7 +30,7 @@ steps:
       - "asia-southeast2"
       - "--allow-unauthenticated" # Agar bisa diakses publik
       - "--add-cloudsql-instances"
-      - "[golden-tenure-478707-e8:asia-southeast2:diabetes-db-instance]" # GANTI DENGAN CONNECTION NAME DARI LANGKAH 2
+      - "golden-tenure-478707-e8:asia-southeast2:diabetes-db-instance" # GANTI DENGAN CONNECTION NAME DARI LANGKAH 2
       - "--set-secrets"
       - "DB_USER=DB_USER:latest,DB_PASS=DB_PASS:latest,DB_NAME=DB_NAME:latest,INSTANCE_CONNECTION_NAME=INSTANCE_CONNECTION_NAME:latest,SECRET_KEY=SECRET_KEY:latest"
       - "--set-env-vars"

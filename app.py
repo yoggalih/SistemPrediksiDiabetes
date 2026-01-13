@@ -15,8 +15,24 @@ from flask_sqlalchemy import SQLAlchemy
 # --- Konfigurasi dan Inisialisasi ---
 app = Flask(__name__)
 
-# Database
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'sqlite:///database.db') 
+# --- KONFIGURASI DATABASE (LOGIKA CLOUD SQL OTOMATIS) ---
+# Mengambil variabel lingkungan yang disuntikkan oleh Secret Manager di Cloud Run
+db_user = os.getenv('DB_USER')
+db_pass = os.getenv('DB_PASS')
+db_name = os.getenv('DB_NAME')
+instance_connection_name = os.getenv('INSTANCE_CONNECTION_NAME')
+
+# Cek apakah kredensial database lengkap (artinya sedang di Cloud Run)
+if db_user and db_pass and db_name and instance_connection_name:
+    # Gunakan koneksi Unix Socket untuk Cloud SQL
+    app.config['SQLALCHEMY_DATABASE_URI'] = (
+        f"mysql+pymysql://{db_user}:{db_pass}@/{db_name}"
+        f"?unix_socket=/cloudsql/{instance_connection_name}"
+    )
+else:
+    # Jika tidak lengkap, gunakan SQLite (untuk test di laptop/local)
+    app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'sqlite:///database.db')
+
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Secret Key
@@ -32,6 +48,7 @@ login_manager.init_app(app)
 login_manager.login_view = 'check_diabetes_page' 
 login_manager.login_message = "Silakan login terlebih dahulu untuk mengakses halaman ini."
 login_manager.login_message_category = "warning"
+
 # Load model & scaler
 try:
     model = pickle.load(open('model/diabetes_model.pkl', 'rb'))
@@ -242,6 +259,9 @@ def check_diabetes_page():
 @app.route('/history')
 @login_required 
 def prediction_history_page():
+    # Pastikan tabel dibuat sebelum query (safety check untuk cloud sql)
+    db.create_all()
+    
     history_records = db.session.execute(
         db.select(PredictionHistory)
         .filter_by(user_id=current_user.id)
@@ -266,6 +286,9 @@ def prediction_history_page():
 @app.route('/predict', methods=['POST'])
 @login_required 
 def predict():
+    # Pastikan tabel ada
+    db.create_all()
+
     feature_names = ['Pregnancies', 'Glucose', 'BloodPressure', 'SkinThickness', 'Insulin', 'BMI', 'DiabetesPedigreeFunction', 'Age']
 
     default_context = {
@@ -274,7 +297,7 @@ def predict():
         'probability_raw': 0.0,
         'risk_level': 'Tidak Diketahui',
         'input_data': {name: 'N/A' for name in feature_names},
-        'advice_list': [] # Default kosong
+        'advice_list': []
     }
 
     try:
@@ -341,7 +364,7 @@ def predict():
             probability_raw=prediction_proba, 
             risk_level=risk_level,            
             input_data=input_values,
-            advice_list=advice_list  # Kirim saran ke template
+            advice_list=advice_list  
         )
             
     except ValueError:
@@ -371,7 +394,6 @@ def prediction_detail(prediction_id):
         'Age': record.age
     }
     
-    # Generate saran untuk data historis juga
     advice_list = generate_health_advice(input_data)
 
     return render_template(
@@ -381,7 +403,7 @@ def prediction_detail(prediction_id):
         probability_raw=record.probability,
         risk_level=record.risk_level,
         input_data=input_data,
-        advice_list=advice_list # Kirim saran ke template
+        advice_list=advice_list
     )
     
 @app.route('/history/delete/<int:prediction_id>', methods=['POST'])
@@ -406,6 +428,7 @@ def delete_history(prediction_id):
     return redirect(url_for('prediction_history_page'))
 
 if __name__ == "__main__":
+    # Untuk local development: buat tabel jika belum ada
     with app.app_context():
         db.create_all()
     app.run(debug=True)

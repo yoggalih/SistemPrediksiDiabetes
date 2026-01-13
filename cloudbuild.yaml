@@ -38,3 +38,6 @@ steps:
 
 images:
   - "asia-southeast2-docker.pkg.dev/golden-tenure-478707-e8/diabetes-repo/web-app"
+
+options:
+  logging: CLOUD_LOGGING_ONLY
